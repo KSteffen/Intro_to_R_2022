@@ -1,0 +1,328 @@
+---
+title: "Introduction to R"
+author: "The workshop team"
+date: "May 27 2022"
+output: 
+  revealjs::revealjs_presentation: 
+    theme: simple
+    highlight: haddock
+    center: false
+    transition: slide
+    css: new_reveal.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, tidy=TRUE, message = FALSE, warning = FALSE)
+```
+
+## Content
+
+> * about R and RStudio
+> * data handling:
+>     * data collection and organization
+>     * manipulation and analysis
+> * visualisation
+>     * interpretation and presentation  
+
+# About R and RStudio
+
+<img src="figures/R_RS_logo.png" class="plain">
+
+- __R__: free software environment for statistical computing and graphics
+- __RStudio__: GUI/ integrated development environment (IDE) for R  
+
+
+## R help & the comunity
+
+- Stackoverflow
+- `man` pages and examples
+- cheat sheets
+
+<img src="figures/R_help.png" class="plain">
+
+## Goals and purposes with using R
+
+> * powerful, flexible/customisable
+> * easy for sharing and developping
+> * __reproducible science__: scripts and markdowns  
+
+## Connecting to the R server
+
+In you own computer's browser, open a new tab and type your AMI address "ec2-...compute-1.amazonaws.com:8787"  
+username: evomics  
+password: genomics2020  
+
+## scripts and markdowns
+
+ <img src="figures/script_markdown.png" class="plain">
+
+Markup languages (HTML, LaTeX, markdown) are used to format text. Both exercises and presentations during this lab have been produced using the rmarkdown package. The code for these are available in the files Intro_to_R.Rmd and Intro_to_R_EXERCISE.Rmd. For longer-form writing, including reports and papers, do have a look at the bookdown package.  
+
+## Data handling: collecting and organisation
+
+__Conventions about data format__  
+
+> * Observations are entered in __rows__
+> * Variables are entered in  __columns__
+> * A column of data should contain only one data type  
+
+## Data handling: collecting and organisation
+
+__Best practice__  
+
+> * Store a copy of data in nonproprietary formats
+> * Leave an uncorrected file when doing analyses
+> * Maintain effective metadata about the data
+> * Create folders for relevant task to keep the overview over your analyses
+
+## Error messages
+
+- Warnings can be ignored.
+- Specific hint? e.g. 
+    - wrong data format, characters/factors instead of numbers
+    - library not loaded, package not installed
+- Try running example code, and check the example input
+- Google is your friend  
+
+# Getting started: Analyses
+
+> * open RStudio
+> * open a script
+> * start typing/ working
+> ...  
+
+## How R works: Operators 
+
+Arithmetic (basic math): +, -, *, /, ^, ...  
+```{r operators1, echo=TRUE}
+12+13+14
+(5+2)*2
+12^2
+```
+
+## How R works: Operators 
+- Arithmetic (basic math): `+, -, *, /, ^, ...`
+- Relational (`<`, `>`, `==`, `!=`)
+- Logical (`!`, `&`,`&&`, `|`, `||` )
+- Assignment (<-, =)  
+
+## How R works: Operators
+
+__Assignment (<-, =)__  
+```{r operators2, echo=TRUE}
+x <- 12
+y <- 13
+z <- 14
+x+y+z
+```
+## How R works: Functions
+
+function(data, additional arguments)  
+```{r function1, echo=TRUE}
+sum(12,13,14)
+sum(x, y, z)
+```
+## How R works: Putting it all together
+
+```{r function2, echo=TRUE}
+k <- c(12, 13, 14)
+k
+sum(k)
+```
+## Functions to start with: Importing data and inspecting it
+
+```{r functions3, echo=TRUE, eval=FALSE}
+# setwd()
+setwd("~/Path/to/working_directory")
+# read.csv()
+data <- read.csv("~/Path/to/file.csv", header=TRUE, sep = ",")
+data <- read.csv("file.csv")
+# head(), tail()
+head(data)
+tail(data)
+```
+
+## BREAK for exercise: read in your files
+
+open the Intro_to_R_EXERCISE.html file in your browser. read through the introduction and complete the "Load data" exercise (until "Inspect and modify the data frames").  
+
+# Data structures
+- vector
+- data.frame, matrix, data.table, tibble
+- list  
+
+## Data structures: vector
+generating a vector  
+```{r data_str1, echo=TRUE}
+k <- c(12, 13, 14)
+animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
+str(k)
+length(k)
+str(animals)
+animals[4]
+```
+
+## Data structures: vector
+modifying a vector:  
+```{r data_str2, echo=TRUE}
+k[4] <- 15
+k <- k[k<14]
+k
+animals <- animals[-4]
+animals
+```
+
+## Data structures: data.frame
+generating a data frame  
+```{r data_str3, echo=TRUE}
+# data <- read.csv("~/Path/to/file.csv")
+data <- data.frame("day" = 6:10, "A.M." = c("L", "L", "P", "L", "P"), "P.M." = c("L", "P", "P", "P", "P"))
+str(data)
+dim(data)
+head(data)
+```
+
+## Data structures: data.frame
+modifying data frames   
+```{r data_str4, echo=TRUE}
+library(dplyr)
+data <- rbind(data, c(11, "L", "P")) # add row
+data <- bind_rows(data, c(day = 12, A.M. = "P", P.M. = "P")) # add row with dplyr bind_rows
+# the column day is now a character
+data["night"] <- 'P' # add column 'night', fill with 'P'
+select(data, night)
+data <- data[-7,] # remove row 7
+data["PM"] <- data$P.M.
+data$P.M. <- NULL # remove column PM
+data <- rename(data, AM=A.M.)
+head(data)
+```
+
+## Data structures: data.frame
+data.frame$column, data.frame[rows, columns]  
+```{r data_str5, echo=TRUE}
+data[data$AM=="L",] #select rows that match a condition
+filter(data, AM=="L") #select rows using dplyr filter
+data[c(1,5), c(2:3)]
+```
+
+## Data structures: data.frame
+modifying data frames  
+rownames and column names  
+```{r data_str6, echo=TRUE}
+colnames(data)
+colnames(data) <- c("date", "session1","session2", "session3")
+rownames(data)
+rownames(data) <- c("mon", "tue", "wed", "thu", "fri", "sat")
+head(data)
+```
+
+## Functions to start with: Importing data and inspecting it
+```{r functions_break2, echo=TRUE, eval=FALSE}
+head(), tail()
+colnames(), rownames()
+str()
+dim()
+data.frame$col.names
+c()
+```
+
+## BREAK for exercise: look at your files
+
+# tidyverse functionalities
+joining data frames  
+```{r tidyverse1, echo=TRUE}
+library(tidyverse)
+speakers <- data.frame(faculty=c("Antoine Limasset", "Brian Haas", "Camille Marchet", "Chris Wheat", "Christa Schleper", "Emiliano Trucchi", "Erik Garrison", "Evan Eichler", "Guy Leonard", "Josephine Paris", "Kelly Wrighton", "Kirk Gosik", "Malachi Griffith", "Mike Zody", "Scott Handley", "Sergey Nurk", "Sonya Dyhrman", "Sophie Shaw"), date=c(9, 13, 9, 17, 16, 15, 8, 11, 11, 11, 14, 16, 10, 7, 14, 9, 6, 7))
+str(speakers)
+str(data)
+```
+
+## tidyverse functionalities
+joining data frames  
+```{r tidyverse2, echo=TRUE}
+library(tidyverse)
+data$date <- as.numeric(data$date)
+# join data sets
+schedule <- left_join(data, speakers)
+schedule
+```
+
+## tidyverse functionalities
+joining data frames  
+```{r tidyverse3, echo=TRUE}
+library(tidyverse)
+# join data sets
+schedule <- full_join(data, speakers)
+head(schedule, n=14)
+```
+
+## tidyverse functionalities
+ggplot2  
+```{r ggplot_2, echo=TRUE, eval=T}
+p <- ggplot(data, aes(x=data$date, y=data$session1))
+p+geom_point()
+```
+## tidyverse functionalities  
+reshape2: melt  
+```{r melt, echo=T, eval=T}
+library(reshape2)
+data_m <- melt(data, id.vars=("date"))
+head(data_m)
+```
+## tidyverse functionalities  
+tidyr: pivot_longer  
+```{r pivot_longer, echo=T, eval=T}
+library(tidyr)
+data_pl <- pivot_longer(data, -'date')
+head(data_pl)
+```
+## tidyverse functionalities  
+ggplot2  
+```{r ggplot_3, echo=TRUE, eval=T}
+data_m$date <- as.numeric(data_m$date)
+ggplot(data_m, aes(x=data_m$date, y=data_m$value))+geom_point()
+```
+## tidyverse functionalities
+ggplot2  
+```{r ggplot_4, echo=TRUE, eval=T}
+ggplot(data_m, aes(x=data_m$date, y=data_m$value))+geom_point()+facet_grid(data_m$variable~.)
+```
+# Bonus tutorials
+## Flow control with while loop
+See for loops, if-else statements  
+```{r lööp, echo=TRUE}
+data["cumulative_working_hours"] <- NA
+n <- 0
+k <- dim(data)[1]
+while (n<k){
+  n <- n+1
+  data$cumulative_working_hours[n] <- 9*n
+  }
+data
+```
+## Custom functions
+```{r functions1, echo=TRUE}
+exponential <- function(n, m){
+  k <- n^m
+  return(k)
+}
+exponential(2,3)
+```
+## Pipes
+Three ways of doing the same thing  
+```{r pipes, echo=TRUE, tidy=FALSE}
+data_all_P <- filter_at(data, vars(starts_with("session")), all_vars(. == "P"))
+select(data_all_P, date)
+select(filter_at(data, vars(starts_with("session")), all_vars(. == "P")), date)
+data %>%   
+  filter_at(vars(starts_with("session")), all_vars(. == "P")) %>%  
+  select(date)
+```
+## git
+- Git is a tool for version control, not specific to R
+- It makes collaborative software development and tracking software changes a lot easier
+- Many bioinformatics tools have their code published and versioned on GitHub/GitLab/BitBucket/etc
+- `git clone` _URL_ copies a git repo to your machine
+- `git add` _filename_ adds the latest version of file _filename_ to your repo
+- `git commit -m "My first commit message"` creates a new "version" containing the files you've added  

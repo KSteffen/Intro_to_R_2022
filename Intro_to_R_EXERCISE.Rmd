@@ -1,0 +1,242 @@
+---
+title: 'Introduction to R: Exercises'
+author: "The workshop team"
+date: "2022-05-27"
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE, message = FALSE, warning = FALSE)
+```
+## Data handling
+
+You're an ecologist interested in quantifying morphologic differences between three highly similar _Iris_ species. To this end, you've identified a suitable sample area where all three species co-occur. As measuring is tedious, you've brough three field assistants with you, to do the work. They are equipped with a ruler (to measure dimensions in cm) and some paper to take notes. You walk around the sample area, identify the plants to species, and mark them with a label with an ID. This information you collected in the file "key.csv". Subsequently, each of your three field assistants measures length and width of sepals and petals from 50 of the plants you've marked with a label. Afterwards, they all send you their data sheets.
+
+- The first part of your exercise is to load the data sets into R.
+- The second part is to modify the data sets and merge them with the help of your original identification key to one "master" data set.
+- The third part is to visually explore and analyse your data.
+
+_This exercise is meant to introduce you to general ways of working with data in R_  
+
+__Before you start__  
+Running computational analyses can quickly produce a large number of files with very uninformative names. Therefore, generally, it is a good idea to create specific folders to work in. When you create a new folder, add your data sets to analyse and save an R script for the specific analyses in that folder. In that R script, you can set that folder as working directory with the `setwd()` command. This allows you to load all files in this directory without giving the full path, and it makes sure that all your output files will end up in that same directory, too.
+
+### Load data
+
+Please read the files key.csv, field_work_measurements_MC.csv, Iris_measurements_KT.csv, Iris_sepal_petal_NTR.csv into R.  
+Getting your data sets into R is the first obstacle you need to overcome. We wanted to give you a realistic example, so all files are a bit different. Make sure you have a look at your imported files to check that they look alright, before you continue. If you have trouble importing the files, you can alwyas open them in a text editor or the terminal to have a look at them.
+
+We'll go through it for each file.
+
+
+__key.csv__  
+Please import as "key".  
+Hint:
+```{r key.csv_hint, eval=FALSE}
+# Use read.csv()
+# Figure out path to file
+```
+Solution:  
+```{r key.csv_solution, eval=TRUE}
+key <-  read.csv("Exercise_material/key.csv", header=TRUE, sep=",")
+```
+
+__field_work_measurements_MC.txt__  
+Please import as "measurements1".  
+Hint:  
+```{r fwm_MC.csv_hint, eval=FALSE}
+# Have a look at the file, how are the columns separated?
+```
+Solution:  
+```{r fwm_MC.csv_solution, eval=TRUE}
+measurements1 <-  read.csv("Exercise_material/field_work_measurements_MC.csv", header=TRUE, sep="\t")
+```
+
+__Iris_measurements_KT.csv__  
+Please import as "measurements2".  
+Hint:  
+```{r Im_KT.csv_hint, eval=FALSE}
+# nothing more, but can still be a good idea to look at the file.
+```
+Solution:  
+```{r Im_KT.csv_solution, eval=TRUE}
+measurements2 <- read.csv("Exercise_material/Iris_measurements_KT.csv", header=TRUE, sep=",")
+```
+
+__Iris_sepal_petal_NTR.csv__  
+Please import as "measurements3".  
+Hint 1:  
+```{r Isp_NTR.csv_hint1, eval=FALSE}
+# Have a look at the file in another way (text editor/terminal) : Is the error message correct?
+```
+Hint 2:  
+```{r Isp_NTR.csv_hint2, eval=FALSE}
+# Which character separates the data entries/columns?
+# Which character denotes the decimals?
+# How do you specify that? Use the help window for 'read.csv()'
+```
+Solution:  
+```{r Isp_NTR._solution, eval=TRUE}
+measurements3 <-  read.csv("Exercise_material/Iris_sepal_petal_NTR.csv", header=T, sep=";", dec=",")
+```
+
+
+## Inspect and modify the data frames
+
+Inspect the data frames. Do they contain all the relevant information? We need:  
+
+- four sets of measurements
+- measured in cm
+- a column for identification  
+
+Hint for looking at the data sets:
+```{r inspection_hint, eval=FALSE}
+# try: str(), dim(), head(), colnames()   
+# to view them: type their name or click on their name in the "environment" window (top right)
+```
+
+Solutions:
+```{r 1_inspection_solution, eval=FALSE}
+dim(measurements1) # 5 columns: ok!
+str(measurements1) # correct type (integer/number)
+colnames(measurements1)
+head(measurements1) # looks alright
+# alternatively, click on the data frame in the top right window in your RStudio
+```
+
+Check all data set the same way. What did you find?
+```{r data_set_troubleshooting}
+# measurements1: generally ok
+# measurements2: measured in mm --> we need to convert the columns to cm!
+# measurements3: sample IDs missing
+# All data frames have different column names.
+```
+
+Let's modify the columns in measurements2 to fit the same scale as the measurements from the other two data frames.
+Hint:
+```{r mm_to_cm_hint, eval=F}
+# create a new column, e.g. sepal_width
+# assign the new column with the corresponding "old" column divided by 10
+# check that it worked properly, if necessary, remove superfluous old data
+```
+
+Suggestions for solution:
+```{r mm_to_cm_solution}
+# one by one
+measurements2["sepal_length"] <- measurements2$sepal_length._mm/10
+measurements2["sepal_width"] <- measurements2$sepal_width_mm/10
+measurements2["petal_length"] <- measurements2$petal_length_mm/10
+measurements2["petal_width"] <- measurements2$petal_width_mm/10
+#have a look whether it looks correct, then remove the old columns ("_mm")
+measurements2$sepal_length._mm <- NULL
+measurements2$sepal_width_mm <- NULL
+measurements2$petal_length_mm <- NULL
+measurements2$petal_width_mm <- NULL
+
+# Bonus:
+# deleting several columns at once: 
+#measurements2[,c("sepal_length._mm", "sepal_width_mm", "petal_length_mm", "petal_width_mm")] <- list(NULL)
+
+# apply a function across a selection of coluns
+#measurements2.1 <- apply(measurements2[,c(1:4)], 2, function(x) x/10)
+#measurements2.1 <- cbind(measurements2.1, measurements2$sample_ID)
+
+# divide a selection of coluns
+#measurements2.2 <- measurements2[,c(1:4)]/10
+#measurements2.2 <- cbind(measurements2.2, measurements2$sample_ID)
+
+# useful: check whether the different methods produce identical data sets
+#all(measurements2.1==measurements2.2)
+```
+
+measurements3 is lacking sample IDs. Luckily, they were recorded, too. Please add them to the data frame as they are.
+```{r add_sampleID}
+sample_ID <- c(37, 29, 30, 7, 42, 48, 14, 39, 49, 43, 18, 46, 47, 17, 31, 32, 91, 67, 97, 92, 99, 88, 71, 65, 57, 73, 75, 81, 52, 61, 62, 80, 111, 110, 129, 112, 133, 130, 102, 127, 150, 131, 105, 101, 142, 113, 147, 145)
+```
+
+Solution:
+```{r add_sampleID_s}
+measurements3["sample_ID"] <- sample_ID
+```
+
+Once everything is okay, add another column to idenitfy who measured the data.  
+Solution for adding new column:  
+```{r adding_column_solution}
+measurements1["source"] <- c("field_assistant1")
+measurements2["source"] <- c("field_assistant2")
+measurements3["source"] <- c("field_assistant3")
+```
+
+Now, let's combine all of them (measurements and our identification key) to one data set. The function we use to join the data sets will merge them based on (1) a designated pairs of columns in each of the two data sets or (2) two (or more) columns with the same name. Therefore, it is most convenient to modify the three different data sets to all have the same headers. Let's do that! Keep in mind that the order of the columns does not play a role, as long as you don't mix them up when you rename them.  
+
+Solution:
+```{r colnames}
+colnames(measurements1) <- c("sample_ID", "sepal_length", "sepal_width", "petal_length", "petal_width", "source")
+colnames(measurements3) <- c("sepal_length", "sepal_width", "petal_length", "petal_width", "sample_ID", "source")
+```
+
+Now let's try to join the measurements together.
+
+Hint:
+```{r join_hint_1, eval=FALSE}
+# to stack the data sets by rows, use rbind() 
+# to combine them with the key for species identification, use a _join(), see dplyer cheat sheet!
+```
+
+Solution:
+```{r join_solutions}
+library(tidyverse)
+master <- rbind(measurements1, measurements2, measurements3)
+master <- left_join(key, master)
+```
+
+Tadaaa! Well done.   
+Now for the last part, visualising and understanding your data. We'll use ggplot2, which is part of the tidyverse.
+
+Let's start by checking visually, whether the measurements from the three field assistants have any bias. Choose any variable, (scatter)plot it by species and add coloring according to who took the measurement. Once you've made the plot, think about whether this representation is suitable, or how you could improve it.
+
+Hint 1:
+```{r ggplot1_h, eval=FALSE}
+# ggplot(data.frame, aes(x=x-axis_column, y=x-axis_column))+ # basic info
+#  geom_...()                                               # how you want to visualise it 
+```
+
+Hint 2:
+```{r ggplot1_h2, eval=FALSE}
+# You'd expect to see 50 dots per species, right? So quite some of the points are overlapping. Try to use geom_jitter() instead of geom_point()
+```
+
+Solution: 
+```{r ggplot1_s, eval=FALSE}
+ggplot(master, aes(x=master$Species, y=master$sepal_length))+geom_point(aes(col=master$source))
+ggplot(master, aes(x=master$Species, y=master$sepal_length))+geom_jitter(aes(col=master$source))
+```
+
+Now to generate a complete plot, add proper labels for the axes and legend, and a title. And if you want to, change the general layout with a different theme. You can find all this information in the documentation online (e.g. https://ggplot2.tidyverse.org/)
+
+Solution
+```{r ggplot_nice, echo=TRUE, eval=FALSE}
+ggplot(master, aes(x=master$Species, y=master$sepal_length))+ geom_jitter(aes(col=master$source))+ theme_classic()+xlab("Iris species")+ylab("measurement in cm")+ggtitle("Sepal length per species")+ guides(col = guide_legend(title = "Assistants"))
+```
+
+Challenge: Now that we've seen that the field assistants did a great job and there seems to be no bias, let's look at all the data. At once. 
+To do so, prepare a grid of bar plots. In order to do so, you will need to transform the data set a bit first.  
+Hint:  
+```{r facet_hint, eval=FALSE}
+# the function to prepare several plots at once is facet_grid() or facet_wrap()
+# in oder to produce a long format data frame, use the function 'melt' from the library 'reshape2'
+# keep "Species", "sample_ID", and "source" as ID variables.
+```
+
+Solution:  
+```{r facet_s, echo=TRUE, eval=FALSE}
+library(reshape2)
+master_m <- melt(master, id.vars=c("Species", "sample_ID", "source"))
+
+ggplot(master_m, aes(y=master_m$value, x=master_m$Species))+geom_boxplot()+facet_grid(.~master_m$variable, scales = "free")
+
+# to make it  look nice:
+last_plot()+theme_bw()+xlab("Iris species")+ylab("measurements in cm")+ggtitle("Data overview")
+```
