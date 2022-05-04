@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, tidy=TRUE, message = FALSE, warning = FALSE)
 You're an ecologist interested in quantifying morphologic differences between three highly similar _Iris_ species. To this end, you've identified a suitable sample area where all three species co-occur. As measuring is tedious, you've brough three field assistants with you, to do the work. They are equipped with a ruler (to measure dimensions in cm) and some paper to take notes. You walk around the sample area, identify the plants to species, and mark them with a label with an ID. This information you collected in the file "key.csv". Subsequently, each of your three field assistants measures length and width of sepals and petals from 50 of the plants you've marked with a label. Afterwards, they all send you their data sheets.
 
 - The first part of your exercise is to load the data sets into R.
-- The second part is to modify the data sets and merge them with the help of your original identification key to one "master" data set.
+- The second part is to modify the data sets and merge them with the help of your original identification key to one "main" data set.
 - The third part is to visually explore and analyse your data.
 
 _This exercise is meant to introduce you to general ways of working with data in R_  
@@ -35,12 +35,17 @@ __key.csv__
 Please import as "key".  
 Hint:
 ```{r key.csv_hint, eval=FALSE}
-# Use read.csv()
 # Figure out path to file
+# Use read.csv()
+
 ```
-Solution:  
+Solution(s):  
 ```{r key.csv_solution, eval=TRUE}
-key <-  read.csv("Exercise_material/key.csv", header=TRUE, sep=",")
+library(readr)
+
+key <- read_delim("Exercise_material/key.csv", delim = ",") # read_delim() is the general function
+key <- read_csv("Exercise_material/key.csv") # read_csv() is a specialised verison for csv files
+key <-  read.csv("Exercise_material/key.csv", header=TRUE, sep=",") # base R :)
 ```
 
 __field_work_measurements_MC.txt__  
@@ -49,19 +54,28 @@ Hint:
 ```{r fwm_MC.csv_hint, eval=FALSE}
 # Have a look at the file, how are the columns separated?
 ```
-Solution:  
+Solution(s):  
 ```{r fwm_MC.csv_solution, eval=TRUE}
-measurements1 <-  read.csv("Exercise_material/field_work_measurements_MC.csv", header=TRUE, sep="\t")
+# tidyverse solution
+# read_delim() is the general function
+measurements1 <-  read_delim("Exercise_material/field_work_measurements_MC.csv", delim="\t") 
+# read_tsv() is a specialised verison for tsv files
+measurements1 <-  read_tsv("Exercise_material/field_work_measurements_MC.csv") 
+
+# base R :)
+measurements1 <-  read.csv("Exercise_material/field_work_measurements_MC.csv", header=TRUE, sep="\t") 
 ```
 
 __Iris_measurements_KT.csv__  
 Please import as "measurements2".  
 Hint:  
 ```{r Im_KT.csv_hint, eval=FALSE}
-# nothing more, but can still be a good idea to look at the file.
+# It is always a good idea to look at the file.
 ```
 Solution:  
 ```{r Im_KT.csv_solution, eval=TRUE}
+measurements2 <- read_delim("Exercise_material/Iris_measurements_KT.csv", delim = ",")
+measurements2 <- read_csv("Exercise_material/Iris_measurements_KT.csv")
 measurements2 <- read.csv("Exercise_material/Iris_measurements_KT.csv", header=TRUE, sep=",")
 ```
 
@@ -69,16 +83,20 @@ __Iris_sepal_petal_NTR.csv__
 Please import as "measurements3".  
 Hint 1:  
 ```{r Isp_NTR.csv_hint1, eval=FALSE}
-# Have a look at the file in another way (text editor/terminal) : Is the error message correct?
+# Have a look at the file in another way (text editor/terminal).
 ```
 Hint 2:  
 ```{r Isp_NTR.csv_hint2, eval=FALSE}
 # Which character separates the data entries/columns?
+
 # Which character denotes the decimals?
-# How do you specify that? Use the help window for 'read.csv()'
+
+# How do you specify that? Use the help window or google.
 ```
 Solution:  
 ```{r Isp_NTR._solution, eval=TRUE}
+measurements3 <-  read_delim("Exercise_material/Iris_sepal_petal_NTR.csv", delim = ";", locale=locale(decimal_mark = ","))
+measurements3 <-  read_csv2("Exercise_material/Iris_sepal_petal_NTR.csv")
 measurements3 <-  read.csv("Exercise_material/Iris_sepal_petal_NTR.csv", header=T, sep=";", dec=",")
 ```
 
@@ -94,10 +112,11 @@ Inspect the data frames. Do they contain all the relevant information? We need:
 Hint for looking at the data sets:
 ```{r inspection_hint, eval=FALSE}
 # try: str(), dim(), head(), colnames()   
+
 # to view them: type their name or click on their name in the "environment" window (top right)
 ```
 
-Solutions:
+Example solutions:
 ```{r 1_inspection_solution, eval=FALSE}
 dim(measurements1) # 5 columns: ok!
 str(measurements1) # correct type (integer/number)
@@ -108,22 +127,46 @@ head(measurements1) # looks alright
 
 Check all data set the same way. What did you find?
 ```{r data_set_troubleshooting}
-# measurements1: generally ok
-# measurements2: measured in mm --> we need to convert the columns to cm!
-# measurements3: sample IDs missing
-# All data frames have different column names.
+# measurements1: generally ok 
+
+# measurements2: measured in mm --> we need to convert the columns to cm! 
+
+# measurements3: sample IDs missing 
+
+# All data frames have different column names. 
 ```
 
 Let's modify the columns in measurements2 to fit the same scale as the measurements from the other two data frames.
 Hint:
 ```{r mm_to_cm_hint, eval=F}
-# create a new column, e.g. sepal_width
-# assign the new column with the corresponding "old" column divided by 10
-# check that it worked properly, if necessary, remove superfluous old data
+# dplyr suggestions:
+
+# Base R suggestion: create a new column (e.g. sepal_width), assign the new column with the corresponding "old" column divided by 10. Check that it worked properly, if necessary, remove superfluous old column.
 ```
 
 Suggestions for solution:
 ```{r mm_to_cm_solution}
+# tidyverse solutions
+library(magrittr)
+library(dplyr)
+library(tidyverse)
+
+# mutate columns; i.e. create a new column "sepal_length_cm" by dividing "sepal_length._mm" by 10
+measurements2 <- measurements2 %>%
+  mutate(sepal_length_cm = sepal_length._mm/10)
+measurements2$sepal_length._mm <- NULL # delete column we no longer need
+
+measurements2 <- read.csv("Exercise_material/Iris_measurements_KT.csv", header=TRUE, sep=",")
+# mutate columns and directly replace the existing one
+measurements2 <- measurements2 %>%
+  mutate(sepal_length._mm = sepal_length._mm/10)
+
+# modify a range of colunms at once, replacing the original columns
+measurements2 <- as_tibble(measurements2)
+measurements2 <- measurements2 %>% 
+  mutate(across(sepal_length._mm:petal_width_mm, ~./10))
+
+# Base R solutions
 # one by one
 measurements2["sepal_length"] <- measurements2$sepal_length._mm/10
 measurements2["sepal_width"] <- measurements2$sepal_width_mm/10
@@ -135,17 +178,19 @@ measurements2$sepal_width_mm <- NULL
 measurements2$petal_length_mm <- NULL
 measurements2$petal_width_mm <- NULL
 
-# Bonus:
+# Elegant tipps and tricks
+
 # deleting several columns at once: 
-#measurements2[,c("sepal_length._mm", "sepal_width_mm", "petal_length_mm", "petal_width_mm")] <- list(NULL)
+measurements2[,c("sepal_length._mm", "sepal_width_mm", "petal_length_mm", "petal_width_mm")] <- list(NULL)
 
 # apply a function across a selection of coluns
-#measurements2.1 <- apply(measurements2[,c(1:4)], 2, function(x) x/10)
-#measurements2.1 <- cbind(measurements2.1, measurements2$sample_ID)
+measurements2.1 <- data.frame(apply(measurements2[,c(1:4)], 2, function(x) x/10))
+measurements2.1 <- cbind(measurements2.1, measurements2$sample_ID)
+ # apply coerces the data frame into a matrix; hence the data.frame() around the apply function. Try removing it and see for yourself.
 
-# divide a selection of coluns
-#measurements2.2 <- measurements2[,c(1:4)]/10
-#measurements2.2 <- cbind(measurements2.2, measurements2$sample_ID)
+# divide a selection of columns
+measurements2.2 <- measurements2[,c(1:4)]/10
+measurements2.2 <- cbind(measurements2.2, measurements2$sample_ID)
 
 # useful: check whether the different methods produce identical data sets
 #all(measurements2.1==measurements2.2)
@@ -158,12 +203,28 @@ sample_ID <- c(37, 29, 30, 7, 42, 48, 14, 39, 49, 43, 18, 46, 47, 17, 31, 32, 91
 
 Solution:
 ```{r add_sampleID_s}
+# tidyverse solution
+measurements3 <- measurements3 %>%
+  add_column(sample_ID=sample_ID)
+
+# base R
 measurements3["sample_ID"] <- sample_ID
 ```
 
 Once everything is okay, add another column to idenitfy who measured the data.  
 Solution for adding new column:  
 ```{r adding_column_solution}
+# tidyverse solution
+measurements1 <- measurements1 %>%
+  add_column(source="field_assistant1")
+
+measurements2 <- measurements2 %>%
+  add_column(source="field_assistant2")
+
+measurements3 <- measurements3 %>%
+  add_column(source="field_assistant3")
+
+# base R :)
 measurements1["source"] <- c("field_assistant1")
 measurements2["source"] <- c("field_assistant2")
 measurements3["source"] <- c("field_assistant3")
@@ -172,7 +233,22 @@ measurements3["source"] <- c("field_assistant3")
 Now, let's combine all of them (measurements and our identification key) to one data set. The function we use to join the data sets will merge them based on (1) a designated pairs of columns in each of the two data sets or (2) two (or more) columns with the same name. Therefore, it is most convenient to modify the three different data sets to all have the same headers. Let's do that! Keep in mind that the order of the columns does not play a role, as long as you don't mix them up when you rename them.  
 
 Solution:
-```{r colnames}
+```{r colnames, eval=T, echo=FALSE}
+# tidyverse solution
+measurements1 <- measurements1 %>% 
+  rename(sepal_length=Sepal.Length, sepal_width=Sepal.Width, petal_length=Petal.Length, petal_width=Petal.Width)
+
+measurements3 <- measurements3 %>% 
+  rename(sepal_length=sep_len, sepal_width=sep_wid, petal_length=pet_len, petal_width=pet_wid)
+
+# base R :)
+
+# check the current column names; alternatively (head) or inspecing the data frames
+
+#colnames(measurements1)
+
+#colnames(measurements3)
+
 colnames(measurements1) <- c("sample_ID", "sepal_length", "sepal_width", "petal_length", "petal_width", "source")
 colnames(measurements3) <- c("sepal_length", "sepal_width", "petal_length", "petal_width", "sample_ID", "source")
 ```
@@ -181,15 +257,18 @@ Now let's try to join the measurements together.
 
 Hint:
 ```{r join_hint_1, eval=FALSE}
-# to stack the data sets by rows, use rbind() 
-# to combine them with the key for species identification, use a _join(), see dplyer cheat sheet!
+# to stack the data sets by rows using bind_rows() or rbind()
+
+# to combine them with the key for species identification, using a _join(), see dplyer cheat sheet!
 ```
 
 Solution:
 ```{r join_solutions}
-library(tidyverse)
-master <- rbind(measurements1, measurements2, measurements3)
-master <- left_join(key, master)
+
+main <- bind_rows(measurements1, measurements2, measurements3)
+main <- rbind(measurements1, measurements2, measurements3)
+
+main <- left_join(key, main)
 ```
 
 Tadaaa! Well done.   
@@ -210,15 +289,15 @@ Hint 2:
 
 Solution: 
 ```{r ggplot1_s, eval=FALSE}
-ggplot(master, aes(x=master$Species, y=master$sepal_length))+geom_point(aes(col=master$source))
-ggplot(master, aes(x=master$Species, y=master$sepal_length))+geom_jitter(aes(col=master$source))
+ggplot(main, aes(x=main$Species, y=main$sepal_length))+geom_point(aes(col=main$source))
+ggplot(main, aes(x=main$Species, y=main$sepal_length))+geom_jitter(aes(col=main$source))
 ```
 
 Now to generate a complete plot, add proper labels for the axes and legend, and a title. And if you want to, change the general layout with a different theme. You can find all this information in the documentation online (e.g. https://ggplot2.tidyverse.org/)
 
 Solution
 ```{r ggplot_nice, echo=TRUE, eval=FALSE}
-ggplot(master, aes(x=master$Species, y=master$sepal_length))+ geom_jitter(aes(col=master$source))+ theme_classic()+xlab("Iris species")+ylab("measurement in cm")+ggtitle("Sepal length per species")+ guides(col = guide_legend(title = "Assistants"))
+ggplot(main, aes(x=main$Species, y=main$sepal_length))+ geom_jitter(aes(col=main$source))+ theme_classic()+xlab("Iris species")+ylab("measurement in cm")+ggtitle("Sepal length per species")+ guides(col = guide_legend(title = "Assistants"))
 ```
 
 Challenge: Now that we've seen that the field assistants did a great job and there seems to be no bias, let's look at all the data. At once. 
@@ -232,10 +311,13 @@ Hint:
 
 Solution:  
 ```{r facet_s, echo=TRUE, eval=FALSE}
-library(reshape2)
-master_m <- melt(master, id.vars=c("Species", "sample_ID", "source"))
+main_m <- main %>% 
+  pivot_longer(!c(Species,sample_ID,source), names_to="variable", values_to="value")
 
-ggplot(master_m, aes(y=master_m$value, x=master_m$Species))+geom_boxplot()+facet_grid(.~master_m$variable, scales = "free")
+library(reshape2)
+main_m <- melt(main, id.vars=c("Species", "sample_ID", "source"))
+
+ggplot(main_m, aes(y=value, x=Species))+geom_boxplot()+facet_grid(.~variable, scales = "free")
 
 # to make it  look nice:
 last_plot()+theme_bw()+xlab("Iris species")+ylab("measurements in cm")+ggtitle("Data overview")
