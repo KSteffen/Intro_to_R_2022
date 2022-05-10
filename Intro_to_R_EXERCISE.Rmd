@@ -44,7 +44,7 @@ Solution(s):
 library(readr)
 
 key <- read_delim("Exercise_material/key.csv", delim = ",") # read_delim() is the general function
-key <- read_csv("Exercise_material/key.csv") # read_csv() is a specialised verison for csv files
+key <- read_csv("Exercise_material/key.csv") # read_csv() is a specialised version for csv files
 key <-  read.csv("Exercise_material/key.csv", header=TRUE, sep=",") # base R :)
 ```
 
@@ -153,18 +153,19 @@ library(tidyverse)
 
 # mutate columns; i.e. create a new column "sepal_length_cm" by dividing "sepal_length._mm" by 10
 measurements2 <- measurements2 %>%
-  mutate(sepal_length_cm = sepal_length._mm/10)
-measurements2$sepal_length._mm <- NULL # delete column we no longer need
+  mutate(sepal_length_cm = sepal_length._mm/10) %>%
+  select(-sepal_length._mm) # drops the sepal_length._mm column
 
 measurements2 <- read.csv("Exercise_material/Iris_measurements_KT.csv", header=TRUE, sep=",")
 # mutate columns and directly replace the existing one
 measurements2 <- measurements2 %>%
   mutate(sepal_length._mm = sepal_length._mm/10)
 
-# modify a range of colunms at once, replacing the original columns
+# modify a range of columns at once, replacing the original columns
 measurements2 <- as_tibble(measurements2)
 measurements2 <- measurements2 %>% 
-  mutate(across(sepal_length._mm:petal_width_mm, ~./10))
+  mutate(across(ends_with('_mm'), ~./10)) %>%
+  rename_with(~ str_remove(.x, '[.]?_mm$'))
 
 # Base R solutions
 # one by one
@@ -211,7 +212,7 @@ measurements3 <- measurements3 %>%
 measurements3["sample_ID"] <- sample_ID
 ```
 
-Once everything is okay, add another column to idenitfy who measured the data.  
+Once everything is okay, add another column to identify who measured the data.  
 Solution for adding new column:  
 ```{r adding_column_solution}
 # tidyverse solution
@@ -289,15 +290,23 @@ Hint 2:
 
 Solution: 
 ```{r ggplot1_s, eval=FALSE}
-ggplot(main, aes(x=main$Species, y=main$sepal_length))+geom_point(aes(col=main$source))
-ggplot(main, aes(x=main$Species, y=main$sepal_length))+geom_jitter(aes(col=main$source))
+ggplot(main, aes(x=Species, y=sepal_length)) +
+  geom_point(aes(col=source))
+ggplot(main, aes(x=Species, y=sepal_length)) +
+  geom_jitter(aes(col=source))
 ```
 
 Now to generate a complete plot, add proper labels for the axes and legend, and a title. And if you want to, change the general layout with a different theme. You can find all this information in the documentation online (e.g. https://ggplot2.tidyverse.org/)
 
 Solution
 ```{r ggplot_nice, echo=TRUE, eval=FALSE}
-ggplot(main, aes(x=main$Species, y=main$sepal_length))+ geom_jitter(aes(col=main$source))+ theme_classic()+xlab("Iris species")+ylab("measurement in cm")+ggtitle("Sepal length per species")+ guides(col = guide_legend(title = "Assistants"))
+ggplot(main, aes(x=Species, y=sepal_length)) +
+  geom_jitter(aes(col=source)) +
+  theme_classic() +
+  xlab("Iris species") +
+  ylab("measurement in cm") +
+  ggtitle("Sepal length per species") +
+  guides(col = guide_legend(title = "Assistants"))
 ```
 
 Challenge: Now that we've seen that the field assistants did a great job and there seems to be no bias, let's look at all the data. At once. 
@@ -317,8 +326,14 @@ main_m <- main %>%
 library(reshape2)
 main_m <- melt(main, id.vars=c("Species", "sample_ID", "source"))
 
-ggplot(main_m, aes(y=value, x=Species))+geom_boxplot()+facet_grid(.~variable, scales = "free")
+ggplot(main_m, aes(y=value, x=Species)) +
+  geom_boxplot() +
+  facet_grid(.~variable, scales = "free")
 
 # to make it  look nice:
-last_plot()+theme_bw()+xlab("Iris species")+ylab("measurements in cm")+ggtitle("Data overview")
+last_plot() +
+  theme_bw() +
+  xlab("Iris species") +
+  ylab("measurements in cm") +
+  ggtitle("Data overview")
 ```
