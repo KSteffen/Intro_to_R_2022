@@ -13,6 +13,8 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, tidy=TRUE, message = FALSE, warning = FALSE)
+library(ggplot2)
+library(tidyverse)
 ```
 
 ## Content
@@ -50,13 +52,13 @@ knitr::opts_chunk$set(echo = FALSE, tidy=TRUE, message = FALSE, warning = FALSE)
 
 In you own computer's browser, open a new tab and type your AMI address "ec2-...compute-1.amazonaws.com:8787"  
 username: evomics  
-password: genomics2020  
+password: genomics2022  
 
 ## scripts and markdowns
 
  <img src="figures/script_markdown.png" class="plain">
 
-Markup languages (HTML, LaTeX, markdown) are used to format text. Both exercises and presentations during this lab have been produced using the rmarkdown package. The code for these are available in the files Intro_to_R.Rmd and Intro_to_R_EXERCISE.Rmd. For longer-form writing, including reports and papers, do have a look at the bookdown package.  
+Markup languages (HTML, LaTeX, markdown) are used to format text. Both exercises and presentations during this lab have been produced using the rmarkdown package. The code for these are available in the files Intro_to_R.Rmd and Intro_to_R_EXERCISE.Rmd. For longer-form writing, including reports and papers, check out the bookdown package.  
 
 ## Data handling: collecting and organisation
 
@@ -84,245 +86,217 @@ __Best practice__
 - Try running example code, and check the example input
 - Google is your friend  
 
-# Getting started: Analyses
+# Getting started
 
 > * open RStudio
 > * open a script
 > * start typing/ working
 > ...  
 
+## How R works: Operators & Functions 
+- Arithmetic (basic math): `+`, `-`, `*`, `/`, `^`, ...
+- Relational: `<`, `>`, `==`, `!=`
+- Logical: `!`, `&`,`&&`, `|`, `||` 
+- Assignment: `<-`, `=`
+- Pipe: `%>%`
+- Colon: `:`
+- Double colon: `::`
+- Functions: e.g. `sum()`, `ggplot()`, ...
+
 ## How R works: Operators 
 
-Arithmetic (basic math): +, -, *, /, ^, ...  
+Examples: Arithmetic (basic math): +, -, *, /, ^, ...  
 ```{r operators1, echo=TRUE}
 12+13+14
 (5+2)*2
 12^2
 ```
 
-## How R works: Operators 
-- Arithmetic (basic math): `+, -, *, /, ^, ...`
-- Relational (`<`, `>`, `==`, `!=`)
-- Logical (`!`, `&`,`&&`, `|`, `||` )
-- Assignment (<-, =)  
-
-## How R works: Operators
+## How R works: Operators & Functions
 
 __Assignment (<-, =)__  
 ```{r operators2, echo=TRUE}
 x <- 12
 y <- 13
 z <- 14
+x
 x+y+z
 ```
-## How R works: Functions
+## How R works: Operators & Functions
 
 function(data, additional arguments)  
 ```{r function1, echo=TRUE}
 sum(12,13,14)
 sum(x, y, z)
-```
-## How R works: Putting it all together
-
-```{r function2, echo=TRUE}
 k <- c(12, 13, 14)
 k
 sum(k)
 ```
+
 ## Functions to start with: Importing data and inspecting it
 
 ```{r functions3, echo=TRUE, eval=FALSE}
-# setwd()
+# Working directory: setwd(), getwd()
 setwd("~/Path/to/working_directory")
-# read.csv()
+getwd()
+
+# tidyverse
+data <- read_delim("file.csv")
+data <- read_tsv("file.tsv")
+data <- read_csv("file.csv")
+# base R: read.csv()
 data <- read.csv("~/Path/to/file.csv", header=TRUE, sep = ",")
-data <- read.csv("file.csv")
-# head(), tail()
+
+# inspect the data structure
 head(data)
 tail(data)
-```
-
-## BREAK for exercise: read in your files
-
-open the Intro_to_R_EXERCISE.html file in your browser. read through the introduction and complete the "Load data" exercise (until "Inspect and modify the data frames").  
-
-# Data structures
-- vector
-- data.frame, matrix, data.table, tibble
-- list  
-
-## Data structures: vector
-generating a vector  
-```{r data_str1, echo=TRUE}
-k <- c(12, 13, 14)
-animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
-str(k)
-length(k)
-str(animals)
-animals[4]
-```
-
-## Data structures: vector
-modifying a vector:  
-```{r data_str2, echo=TRUE}
-k[4] <- 15
-k <- k[k<14]
-k
-animals <- animals[-4]
-animals
-```
-
-## Data structures: data.frame
-generating a data frame  
-```{r data_str3, echo=TRUE}
-# data <- read.csv("~/Path/to/file.csv")
-data <- data.frame("day" = 6:10, "A.M." = c("L", "L", "P", "L", "P"), "P.M." = c("L", "P", "P", "P", "P"))
-str(data)
 dim(data)
-head(data)
-```
-
-## Data structures: data.frame
-modifying data frames   
-```{r data_str4, echo=TRUE}
-library(dplyr)
-data <- rbind(data, c(11, "L", "P")) # add row
-data <- bind_rows(data, c(day = 12, A.M. = "P", P.M. = "P")) # add row with dplyr bind_rows
-# the column day is now a character
-data["night"] <- 'P' # add column 'night', fill with 'P'
-select(data, night)
-data <- data[-7,] # remove row 7
-data["PM"] <- data$P.M.
-data$P.M. <- NULL # remove column PM
-data <- rename(data, AM=A.M.)
-head(data)
-```
-
-## Data structures: data.frame
-data.frame$column, data.frame[rows, columns]  
-```{r data_str5, echo=TRUE}
-data[data$AM=="L",] #select rows that match a condition
-filter(data, AM=="L") #select rows using dplyr filter
-data[c(1,5), c(2:3)]
-```
-
-## Data structures: data.frame
-modifying data frames  
-rownames and column names  
-```{r data_str6, echo=TRUE}
-colnames(data)
-colnames(data) <- c("date", "session1","session2", "session3")
-rownames(data)
-rownames(data) <- c("mon", "tue", "wed", "thu", "fri", "sat")
-head(data)
-```
-
-## Functions to start with: Importing data and inspecting it
-```{r functions_break2, echo=TRUE, eval=FALSE}
-head(), tail()
-colnames(), rownames()
-str()
-dim()
-data.frame$col.names
-c()
-```
-
-## BREAK for exercise: look at your files
-
-# tidyverse functionalities
-joining data frames  
-```{r tidyverse1, echo=TRUE}
-library(tidyverse)
-speakers <- data.frame(faculty=c("Antoine Limasset", "Brian Haas", "Camille Marchet", "Chris Wheat", "Christa Schleper", "Emiliano Trucchi", "Erik Garrison", "Evan Eichler", "Guy Leonard", "Josephine Paris", "Kelly Wrighton", "Kirk Gosik", "Malachi Griffith", "Mike Zody", "Scott Handley", "Sergey Nurk", "Sonya Dyhrman", "Sophie Shaw"), date=c(9, 13, 9, 17, 16, 15, 8, 11, 11, 11, 14, 16, 10, 7, 14, 9, 6, 7))
-str(speakers)
 str(data)
+rownames(data)
+colnames(data)
 ```
 
-## tidyverse functionalities
-joining data frames  
-```{r tidyverse2, echo=TRUE}
-library(tidyverse)
-data$date <- as.numeric(data$date)
-# join data sets
-schedule <- left_join(data, speakers)
-schedule
+## Data structures
+
+- How to work with tables (**data frame**/**data table**/**tibble**/**matrix**)
+- How to access parts in **vectors**,tables and **S4 objects**
+
+# Working with tables (data frame, tibble, data table)
+
+```{r tables, echo=TRUE}
+mpg <- mpg # data set included in ggplot2 package
+mpg
 ```
 
-## tidyverse functionalities
-joining data frames  
-```{r tidyverse3, echo=TRUE}
-library(tidyverse)
-# join data sets
-schedule <- full_join(data, speakers)
-head(schedule, n=14)
+## Working with tables
+
+```{r filter_select, echo=TRUE, eval=T}
+mpg %>% 
+  filter(manufacturer=="lincoln")
+
+mpg %>%
+  select(-c(displ,year,cyl,trans,drv,fl,class))
+```
+## Working with tables
+
+```{r mutate, echo=TRUE, eval=TRUE}
+mpg %>% 
+  rename(fuel=fl) %>%
+  head(n=2)
+
+mpg %>%
+  mutate(city_kmL=cty/2.352) %>%
+  select(c(manufacturer, model, displ, year, city_kmL))
 ```
 
-## tidyverse functionalities
-ggplot2  
-```{r ggplot_2, echo=TRUE, eval=T}
-p <- ggplot(data, aes(x=data$date, y=data$session1))
-p+geom_point()
+## Working with tables
+
+```{r summarise, echo=T, eval=T}
+mpg %>%
+  summarise(mean_fuel = mean(cty))
+
+# median(), sd(), IQR(), min(), max(), n()
+
+summary <- mpg %>%
+  summarise(mean_fuel = mean(cty))
+summary
 ```
-## tidyverse functionalities  
-reshape2: melt  
-```{r melt, echo=T, eval=T}
-library(reshape2)
-data_m <- melt(data, id.vars=("date"))
-head(data_m)
+
+## Working with tables
+
+```{r pivot, echo=T, eval=T}
+colnames(mpg)
+
+mpg %>%
+  pivot_longer(!c(manufacturer, model, displ, year, cyl, trans, drv, fl, class), names_to="city_highway", values_to="mpg") %>%
+  select(manufacturer, model, year, trans, city_highway, mpg)
 ```
-## tidyverse functionalities  
-tidyr: pivot_longer  
-```{r pivot_longer, echo=T, eval=T}
-library(tidyr)
-data_pl <- pivot_longer(data, -'date')
-head(data_pl)
+
+## Working with tables
+
+```{r piv_sum, echo=T, eval=T}
+mpg %>%
+  pivot_longer(!c(manufacturer, model, displ, year, cyl, trans, drv, fl, class), names_to="city_highway", values_to="mpg") %>%
+  summarise(mean_fuel = mean(mpg))
 ```
-## tidyverse functionalities  
-ggplot2  
-```{r ggplot_3, echo=TRUE, eval=T}
-data_m$date <- as.numeric(data_m$date)
-ggplot(data_m, aes(x=data_m$date, y=data_m$value))+geom_point()
+
+## Working with tables
+
+```{r join, eval=TRUE, echo=TRUE}
+df <- tibble(manufacturer=c("audi", "chevrolet", "dodge", "ford", "honda", "hyundai", "jeep", "land rover", "lincoln", "mercury", "nissan", "pontiac", "subaru", "toyota", "volkswagen"), country_origin=c("Germany", "USA", "USA", "USA", "Japan", "South Korea", "USA", "USA", "USA", "USA", "Japan", "USA","Japan", "Japan", "Germany"))
+head(df, n=3)
+
+mpg %>%
+  left_join(., df) %>%
+  select(c(manufacturer, model, year, trans, country_origin))
 ```
-## tidyverse functionalities
-ggplot2  
-```{r ggplot_4, echo=TRUE, eval=T}
-ggplot(data_m, aes(x=data_m$date, y=data_m$value))+geom_point()+facet_grid(data_m$variable~.)
+
+## Working with tables
+
+```{r diff_tidy_base, echo=T, eval=TRUE}
+mpg %>%
+  summarise(mean_fuel = mean(cty))
+
+mean(mpg$cty)
 ```
-# Bonus tutorials
-## Flow control with while loop
-See for loops, if-else statements  
-```{r lööp, echo=TRUE}
-data["cumulative_working_hours"] <- NA
-n <- 0
-k <- dim(data)[1]
-while (n<k){
-  n <- n+1
-  data$cumulative_working_hours[n] <- 9*n
-  }
-data
+
+## BREAK for the first part of the exercise
+
+# How to access and modify parts of data structures
+
+## How to access and modify parts of data structures: vectors
+
+vector[element], length(vector)
+
+```{r access_vectors, echo=TRUE}
+k <- c(12, 13, 14)
+k
+(k[4] <- 15)
+
+animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
+animals[3:4]
+
+length(k)
 ```
-## Custom functions
-```{r functions1, echo=TRUE}
-exponential <- function(n, m){
-  k <- n^m
-  return(k)
-}
-exponential(2,3)
+
+## How to access and modify parts of data structures: tables
+
+table$column, table[rows, columns], dim(table)
+
+```{r access_tables, echo=TRUE, eval=T}
+head(mpg$cty)
+mpg[1:2, c("manufacturer", "model", "displ", "year", "cyl", "trans")]
+mpg[mpg$manufacturer=="lincoln",] #select rows that match a condition
 ```
-## Pipes
-Three ways of doing the same thing  
-```{r pipes, echo=TRUE, tidy=FALSE}
-data_all_P <- filter_at(data, vars(starts_with("session")), all_vars(. == "P"))
-select(data_all_P, date)
-select(filter_at(data, vars(starts_with("session")), all_vars(. == "P")), date)
-data %>%   
-  filter_at(vars(starts_with("session")), all_vars(. == "P")) %>%  
-  select(date)
+
+## S4 object
+
+Specifically defined tables or more complex data structures
+
+
+# Data visalisation with ggplot2  
+
+ggplot(table, aes(x=column1, y=column2))+geom_...()
+
+```{r plot1, echo=TRUE, eval=TRUE}
+ggplot(mpg, aes(x=manufacturer, y=cty))+geom_point()
 ```
-## git
-- Git is a tool for version control, not specific to R
-- It makes collaborative software development and tracking software changes a lot easier
-- Many bioinformatics tools have their code published and versioned on GitHub/GitLab/BitBucket/etc
-- `git clone` _URL_ copies a git repo to your machine
-- `git add` _filename_ adds the latest version of file _filename_ to your repo
-- `git commit -m "My first commit message"` creates a new "version" containing the files you've added  
+
+## Data visualisation with ggplot2  
+
+*What kind of "geom" to use?*
+
+Check out the [R graph gallery](https://r-graph-gallery.com/)!
+
+*How about colours?*
+
+Try out different colour palettes inspired from [Wes Anderson movies](https://github.com/karthik/wesanderson) or [Studio Ghibli](https://github.com/ewenme/ghibli).
+Or find good colour combinations [here](https://medialab.github.io/iwanthue/) and specify them manually.
+
+*Easy professional styles?*
+
+Explore different styles from the ggthemes package last_plot()+theme_
+
+*Feel silly?*
+
+https://cran.r-project.org/web/packages/xkcd/vignettes/xkcd-intro.pdf

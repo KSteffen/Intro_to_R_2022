@@ -162,10 +162,9 @@ measurements2 <- measurements2 %>%
   mutate(sepal_length._mm = sepal_length._mm/10)
 
 # modify a range of columns at once, replacing the original columns
-measurements2 <- as_tibble(measurements2)
 measurements2 <- measurements2 %>% 
   mutate(across(ends_with('_mm'), ~./10)) %>%
-  rename_with(~ str_remove(.x, '[.]?_mm$'))
+  rename_with(~ str_remove(.x, '[.]?_mm$')) # this is an advanced addition
 
 # Base R solutions
 # one by one
@@ -239,6 +238,9 @@ Solution:
 measurements1 <- measurements1 %>% 
   rename(sepal_length=Sepal.Length, sepal_width=Sepal.Width, petal_length=Petal.Length, petal_width=Petal.Width)
 
+measurements2 <- measurements2 %>% 
+  rename(sepal_length=`sepal_length `)
+
 measurements3 <- measurements3 %>% 
   rename(sepal_length=sep_len, sepal_width=sep_wid, petal_length=pet_len, petal_width=pet_wid)
 
@@ -265,7 +267,6 @@ Hint:
 
 Solution:
 ```{r join_solutions}
-
 main <- bind_rows(measurements1, measurements2, measurements3)
 main <- rbind(measurements1, measurements2, measurements3)
 
@@ -279,7 +280,7 @@ Let's start by checking visually, whether the measurements from the three field 
 
 Hint 1:
 ```{r ggplot1_h, eval=FALSE}
-# ggplot(data.frame, aes(x=x-axis_column, y=x-axis_column))+ # basic info
+# ggplot(data.frame, aes(x=x_axis_column, y=x_axis_column))+ # basic info
 #  geom_...()                                               # how you want to visualise it 
 ```
 
