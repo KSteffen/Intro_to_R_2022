@@ -50,7 +50,7 @@ library(tidyverse)
 
 ## Connecting to the R server
 
-In you own computer's browser, open a new tab and type your AMI address "ec2-...compute-1.amazonaws.com:8787"  
+In you own computer's browser, open a new tab and type your AMI address "AMI address:8787"  
 username: evomics  
 password: genomics2022  
 
@@ -133,6 +133,50 @@ k
 sum(k)
 ```
 
+# How to access and modify parts of data structures
+
+## How to access and modify parts of data structures: vectors
+
+vector[element], length(vector)
+
+```{r access_vectors, echo=TRUE}
+k <- c(12, 13, 14)
+k
+(k[4] <- 15)
+
+animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
+animals[3:4]
+
+length(k)
+```
+
+## How to access and modify parts of data structures: tables
+
+table$column, table[rows, columns], dim(table)
+
+```{r access_tables, echo=TRUE, eval=T}
+df <- tibble(k, animals, colour=c("brown", "rainbow", "brown", "rainbow"))
+df[1:2,]
+df[df$colour=="brown",] #select rows that match a condition
+```
+
+## S4 object
+
+Specifically defined tables or more complex data structures, e.g.
+```{r S4, echo=T, eval=T}
+library(Biostrings)
+dnastring <-  DNAString("TTGAAA-CTC-N")
+str(dnastring)  
+dnastring@length
+reverseComplement(dnastring)
+```
+
+```{r unfuck, echo=FALSE, eval=TRUE}
+detach("package:Biostrings", unload=TRUE)
+```
+
+
+
 ## Functions to start with: Importing data and inspecting it
 
 ```{r functions3, echo=TRUE, eval=FALSE}
@@ -164,6 +208,7 @@ colnames(data)
 # Working with tables (data frame, tibble, data table)
 
 ```{r tables, echo=TRUE}
+#library(tidyverse)
 mpg <- mpg # data set included in ggplot2 package
 mpg
 ```
@@ -181,7 +226,7 @@ mpg %>%
 
 ```{r mutate, echo=TRUE, eval=TRUE}
 mpg %>% 
-  rename(fuel=fl) %>%
+  dplyr::rename(fuel=fl) %>%
   head(n=2)
 
 mpg %>%
@@ -241,38 +286,6 @@ mean(mpg$cty)
 ```
 
 ## BREAK for the first part of the exercise
-
-# How to access and modify parts of data structures
-
-## How to access and modify parts of data structures: vectors
-
-vector[element], length(vector)
-
-```{r access_vectors, echo=TRUE}
-k <- c(12, 13, 14)
-k
-(k[4] <- 15)
-
-animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
-animals[3:4]
-
-length(k)
-```
-
-## How to access and modify parts of data structures: tables
-
-table$column, table[rows, columns], dim(table)
-
-```{r access_tables, echo=TRUE, eval=T}
-head(mpg$cty)
-mpg[1:2, c("manufacturer", "model", "displ", "year", "cyl", "trans")]
-mpg[mpg$manufacturer=="lincoln",] #select rows that match a condition
-```
-
-## S4 object
-
-Specifically defined tables or more complex data structures
-
 
 # Data visalisation with ggplot2  
 
