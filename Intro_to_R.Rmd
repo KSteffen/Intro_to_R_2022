@@ -99,8 +99,9 @@ __Best practice__
 - Logical: `!`, `&`,`&&`, `|`, `||` 
 - Assignment: `<-`, `=`
 - Pipe: `%>%`
-- Colon: `:`
-- Double colon: `::`
+- Specifying ranges (colon): `:`
+- Access library functions: `::`
+- Comment: `#`
 - Functions: e.g. `sum()`, `ggplot()`, ...
 
 ## How R works: Operators 
@@ -143,11 +144,10 @@ vector[element], length(vector)
 k <- c(12, 13, 14)
 k
 (k[4] <- 15)
+length(k)
 
 animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
 animals[3:4]
-
-length(k)
 ```
 
 ## How to access and modify parts of data structures: tables
@@ -164,18 +164,11 @@ df[df$colour=="brown",] #select rows that match a condition
 
 Specifically defined tables or more complex data structures, e.g.
 ```{r S4, echo=T, eval=T}
-library(Biostrings)
-dnastring <-  DNAString("TTGAAA-CTC-N")
+dnastring <-  Biostrings::DNAString("TTGAAA-CTC-N")
 str(dnastring)  
 dnastring@length
-reverseComplement(dnastring)
+Biostrings::reverseComplement(dnastring)
 ```
-
-```{r unfuck, echo=FALSE, eval=TRUE}
-detach("package:Biostrings", unload=TRUE)
-```
-
-
 
 ## Functions to start with: Importing data and inspecting it
 
@@ -250,10 +243,8 @@ summary
 ## Working with tables
 
 ```{r pivot, echo=T, eval=T}
-colnames(mpg)
-
 mpg %>%
-  pivot_longer(!c(manufacturer, model, displ, year, cyl, trans, drv, fl, class), names_to="city_highway", values_to="mpg") %>%
+  pivot_longer(c(cty, hwy), names_to="city_highway", values_to="mpg") %>%
   select(manufacturer, model, year, trans, city_highway, mpg)
 ```
 
@@ -261,7 +252,7 @@ mpg %>%
 
 ```{r piv_sum, echo=T, eval=T}
 mpg %>%
-  pivot_longer(!c(manufacturer, model, displ, year, cyl, trans, drv, fl, class), names_to="city_highway", values_to="mpg") %>%
+  pivot_longer(c(cty, hwy), names_to="city_highway", values_to="mpg") %>%
   summarise(mean_fuel = mean(mpg))
 ```
 
@@ -272,7 +263,7 @@ df <- tibble(manufacturer=c("audi", "chevrolet", "dodge", "ford", "honda", "hyun
 head(df, n=3)
 
 mpg %>%
-  left_join(., df) %>%
+  left_join(df) %>%
   select(c(manufacturer, model, year, trans, country_origin))
 ```
 
