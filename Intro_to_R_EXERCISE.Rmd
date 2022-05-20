@@ -39,12 +39,13 @@ Hint:
 # Use read.csv()
 
 ```
+
 Solution(s):  
 ```{r key.csv_solution, eval=TRUE}
 library(readr)
 
 key <- read_delim("Exercise_material/key.csv", delim = ",") # read_delim() is the general function
-key <- read_csv("Exercise_material/key.csv") # read_csv() is a specialised version for csv files
+key <- read_csv("Exercise_material/key.csv") # read_csv() is a specialized version for csv files
 key <-  read.csv("Exercise_material/key.csv", header=TRUE, sep=",") # base R :)
 ```
 
@@ -54,6 +55,7 @@ Hint:
 ```{r fwm_MC.csv_hint, eval=FALSE}
 # Have a look at the file, how are the columns separated?
 ```
+
 Solution(s):  
 ```{r fwm_MC.csv_solution, eval=TRUE}
 # tidyverse solution
@@ -72,6 +74,7 @@ Hint:
 ```{r Im_KT.csv_hint, eval=FALSE}
 # It is always a good idea to look at the file.
 ```
+
 Solution:  
 ```{r Im_KT.csv_solution, eval=TRUE}
 measurements2 <- read_delim("Exercise_material/Iris_measurements_KT.csv", delim = ",")
@@ -88,6 +91,7 @@ Hint 1:
 ```{r Isp_NTR.csv_hint1, eval=FALSE}
 # Have a look at the file in another way (text editor/terminal).
 ```
+
 Hint 2:  
 ```{r Isp_NTR.csv_hint2, eval=FALSE}
 # Which character separates the data entries/columns?
@@ -96,13 +100,13 @@ Hint 2:
 
 # How do you specify that? Use the help window or google.
 ```
+
 Solution:  
 ```{r Isp_NTR._solution, eval=TRUE}
 measurements3 <-  read_delim("Exercise_material/Iris_sepal_petal_NTR.csv", delim = ";", locale=locale(decimal_mark = ","))
 measurements3 <-  read_csv2("Exercise_material/Iris_sepal_petal_NTR.csv")
 measurements3 <-  read.csv("Exercise_material/Iris_sepal_petal_NTR.csv", header=T, sep=";", dec=",")
 ```
-
 
 ## Inspect and modify the data frames
 

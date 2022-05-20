@@ -230,8 +230,6 @@ window.initializeCodeFolding = function(show) {
   // select all R code blocks
   var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia, pre.foldable');
   rCodeBlocks.each(function() {
-    // skip if the block has fold-none class
-    if ($(this).hasClass('fold-none')) return;
 
     // create a collapsable div to wrap the code in
     var div = $('<div class="collapse r-code-collapse"></div>');
@@ -504,27 +502,26 @@ terminal to have a look at them.</p>
 <p><strong>key.csv</strong><br />
 Please import as “key”.<br />
 Hint:</p>
-<pre class="r"><code># Figure out path to file
-# Use read.csv()</code></pre>
+<pre class="r"><code># Figure out path to file Use read.csv()</code></pre>
 <p>Solution(s):</p>
 <pre class="r"><code>library(readr)
 
-key &lt;- read_delim(&quot;Exercise_material/key.csv&quot;, delim = &quot;,&quot;) # read_delim() is the general function
-key &lt;- read_csv(&quot;Exercise_material/key.csv&quot;) # read_csv() is a specialised version for csv files
-key &lt;-  read.csv(&quot;Exercise_material/key.csv&quot;, header=TRUE, sep=&quot;,&quot;) # base R :)</code></pre>
+key &lt;- read_delim(&quot;Exercise_material/key.csv&quot;, delim = &quot;,&quot;)  # read_delim() is the general function
+key &lt;- read_csv(&quot;Exercise_material/key.csv&quot;)  # read_csv() is a specialized version for csv files
+key &lt;- read.csv(&quot;Exercise_material/key.csv&quot;, header = TRUE, sep = &quot;,&quot;)  # base R :)</code></pre>
 <p><strong>field_work_measurements_MC.txt</strong><br />
 Please import as “measurements1”.<br />
 Hint:</p>
 <pre class="r"><code># Have a look at the file, how are the columns separated?</code></pre>
 <p>Solution(s):</p>
-<pre class="r"><code># tidyverse solution
-# read_delim() is the general function
-measurements1 &lt;-  read_delim(&quot;Exercise_material/field_work_measurements_MC.csv&quot;, delim=&quot;\t&quot;) 
+<pre class="r"><code># tidyverse solution read_delim() is the general function
+measurements1 &lt;- read_delim(&quot;Exercise_material/field_work_measurements_MC.csv&quot;, delim = &quot;\t&quot;)
 # read_tsv() is a specialised verison for tsv files
-measurements1 &lt;-  read_tsv(&quot;Exercise_material/field_work_measurements_MC.csv&quot;) 
+measurements1 &lt;- read_tsv(&quot;Exercise_material/field_work_measurements_MC.csv&quot;)
 
 # base R :)
-measurements1 &lt;-  read.csv(&quot;Exercise_material/field_work_measurements_MC.csv&quot;, header=TRUE, sep=&quot;\t&quot;) </code></pre>
+measurements1 &lt;- read.csv(&quot;Exercise_material/field_work_measurements_MC.csv&quot;, header = TRUE,
+    sep = &quot;\t&quot;)</code></pre>
 <p><strong>Iris_measurements_KT.csv</strong><br />
 Please import as “measurements2”.<br />
 Hint:</p>
@@ -532,10 +529,11 @@ Hint:</p>
 <p>Solution:</p>
 <pre class="r"><code>measurements2 &lt;- read_delim(&quot;Exercise_material/Iris_measurements_KT.csv&quot;, delim = &quot;,&quot;)
 measurements2 &lt;- read_csv(&quot;Exercise_material/Iris_measurements_KT.csv&quot;)
-# Using check.names = FALSE in read.csv to ensure that results
-# are the same across methods. Feel free to look at what happens
-# if check.names is used when reading the measurements2 file!
-measurements2 &lt;- read.csv(&quot;Exercise_material/Iris_measurements_KT.csv&quot;, header=TRUE, sep=&quot;,&quot;, check.names = FALSE)</code></pre>
+# Using check.names = FALSE in read.csv to ensure that results are the same
+# across methods. Feel free to look at what happens if check.names is used when
+# reading the measurements2 file!
+measurements2 &lt;- read.csv(&quot;Exercise_material/Iris_measurements_KT.csv&quot;, header = TRUE,
+    sep = &quot;,&quot;, check.names = FALSE)</code></pre>
 <p><strong>Iris_sepal_petal_NTR.csv</strong><br />
 Please import as “measurements3”.<br />
 Hint 1:</p>
@@ -547,9 +545,11 @@ Hint 1:</p>
 
 # How do you specify that? Use the help window or google.</code></pre>
 <p>Solution:</p>
-<pre class="r"><code>measurements3 &lt;-  read_delim(&quot;Exercise_material/Iris_sepal_petal_NTR.csv&quot;, delim = &quot;;&quot;, locale=locale(decimal_mark = &quot;,&quot;))
-measurements3 &lt;-  read_csv2(&quot;Exercise_material/Iris_sepal_petal_NTR.csv&quot;)
-measurements3 &lt;-  read.csv(&quot;Exercise_material/Iris_sepal_petal_NTR.csv&quot;, header=T, sep=&quot;;&quot;, dec=&quot;,&quot;)</code></pre>
+<pre class="r"><code>measurements3 &lt;- read_delim(&quot;Exercise_material/Iris_sepal_petal_NTR.csv&quot;, delim = &quot;;&quot;,
+    locale = locale(decimal_mark = &quot;,&quot;))
+measurements3 &lt;- read_csv2(&quot;Exercise_material/Iris_sepal_petal_NTR.csv&quot;)
+measurements3 &lt;- read.csv(&quot;Exercise_material/Iris_sepal_petal_NTR.csv&quot;, header = T,
+    sep = &quot;;&quot;, dec = &quot;,&quot;)</code></pre>
 </div>
 </div>
 <div id="inspect-and-modify-the-data-frames" class="section level2">
@@ -562,59 +562,61 @@ information? We need:</p>
 <li>a column for identification</li>
 </ul>
 <p>Hint for looking at the data sets:</p>
-<pre class="r"><code># try: str(), dim(), head(), colnames()   
+<pre class="r"><code># try: str(), dim(), head(), colnames()
 
-# to view them: type their name or click on their name in the &quot;environment&quot; window (top right)</code></pre>
+# to view them: type their name or click on their name in the &#39;environment&#39;
+# window (top right)</code></pre>
 <p>Example solutions:</p>
-<pre class="r"><code>dim(measurements1) # 5 columns: ok!
-str(measurements1) # correct type (integer/number)
+<pre class="r"><code>dim(measurements1)  # 5 columns: ok!
+str(measurements1)  # correct type (integer/number)
 colnames(measurements1)
-head(measurements1) # looks alright
-# alternatively, click on the data frame in the top right window in your RStudio</code></pre>
+head(measurements1)  # looks alright
+# alternatively, click on the data frame in the top right window in your
+# RStudio</code></pre>
 <p>Check all data set the same way. What did you find?</p>
-<pre class="r"><code># measurements1: generally ok 
+<pre class="r"><code># measurements1: generally ok
 
-# measurements2: measured in mm --&gt; we need to convert the columns to cm! 
+# measurements2: measured in mm --&gt; we need to convert the columns to cm!
 
-# measurements3: sample IDs missing 
+# measurements3: sample IDs missing
 
-# All data frames have different column names. </code></pre>
+# All data frames have different column names.</code></pre>
 <p>Let’s modify the columns in measurements2 to fit the same scale as
 the measurements from the other two data frames. Hint:</p>
-<pre class="r"><code># Tidyverse suggestions: create new columns using mutate() to rescale values, rename or drop columns using rename() or select().
+<pre class="r"><code># Tidyverse suggestions: create new columns using mutate() to rescale values,
+# rename or drop columns using rename() or select().
 
-# Base R suggestion: create a new column (e.g. sepal_width), assign the new column with the corresponding &quot;old&quot; column divided by 10. Check that it worked properly, if necessary, remove superfluous old column.</code></pre>
+# Base R suggestion: create a new column (e.g. sepal_width), assign the new
+# column with the corresponding &#39;old&#39; column divided by 10. Check that it
+# worked properly, if necessary, remove superfluous old column.</code></pre>
 <p>Suggestions for solution:</p>
 <pre class="r"><code># tidyverse solutions
 library(tidyverse)
 
-# The solutions below are redundant - running the code as is won&#39;t work,
-# but try the methods that appeal to you :)
-# mutate columns; i.e. create a new column &quot;sepal_length_cm&quot; by dividing &quot;sepal_length._mm&quot; by 10
+# The solutions below are redundant - running the code as is won&#39;t work, but
+# try the methods that appeal to you :) mutate columns; i.e. create a new
+# column &#39;sepal_length_cm&#39; by dividing &#39;sepal_length._mm&#39; by 10
 measurements2 %&gt;%
-  mutate(sepal_length_cm = `sepal_length _mm`/10) %&gt;%
-  select(-`sepal_length _mm`) # drops the sepal_length._mm column
+    mutate(sepal_length_cm = `sepal_length _mm`/10) %&gt;%
+    select(-`sepal_length _mm`)  # drops the sepal_length._mm column
 
-# modify a range of columns at once, replacing the original columns
-# and renaming them afterwards
-measurements2 %&gt;% 
-  mutate(across(ends_with(&#39;_mm&#39;), ~./10)) %&gt;%
-  rename_with(~ str_remove(.x, &#39;[ ]?_mm$&#39;)) # this is some regexp (regular expression) magic
-  # The rename_with above is very fancy!
-  # It takes as its argument a function to rename according to
-  # Here we use tilde (~) to create an unnamed (anonymous/lambda) function
-  # which in turn calls the str_remove function
-  # to remove text patterns matching the regular expression
-  # &#39;[ ]?_mm$&#39;, i.e. an optional space, followed by _mm as
-  # the end of the string
+# modify a range of columns at once, replacing the original columns and
+# renaming them afterwards
+measurements2 %&gt;%
+    mutate(across(ends_with(&quot;_mm&quot;), ~./10)) %&gt;%
+    rename_with(~str_remove(.x, &quot;[ ]?_mm$&quot;))  # this is some regexp (regular expression) magic
+# The rename_with above is very fancy!  It takes as its argument a function to
+# rename according to Here we use tilde (~) to create an unnamed
+# (anonymous/lambda) function which in turn calls the str_remove function to
+# remove text patterns matching the regular expression &#39;[ ]?_mm$&#39;, i.e. an
+# optional space, followed by _mm as the end of the string
 
-# Base R solutions
-# one by one
+# Base R solutions one by one
 measurements2[&quot;sepal_length&quot;] &lt;- measurements2$`sepal_length _mm`/10
 measurements2[&quot;sepal_width&quot;] &lt;- measurements2$sepal_width_mm/10
 measurements2[&quot;petal_length&quot;] &lt;- measurements2$petal_length_mm/10
 measurements2[&quot;petal_width&quot;] &lt;- measurements2$petal_width_mm/10
-#have a look whether it looks correct, then remove the old columns (&quot;_mm&quot;)
+# have a look whether it looks correct, then remove the old columns (&#39;_mm&#39;)
 measurements2$`sepal_length _mm` &lt;- NULL
 measurements2$sepal_width_mm &lt;- NULL
 measurements2$petal_length_mm &lt;- NULL
@@ -622,27 +624,30 @@ measurements2$petal_width_mm &lt;- NULL
 
 # Elegant tips and tricks
 
-# deleting several columns at once: 
-measurements2[,c(&quot;sepal_length _mm&quot;, &quot;sepal_width_mm&quot;, &quot;petal_length_mm&quot;, &quot;petal_width_mm&quot;)] &lt;- list(NULL)
+# deleting several columns at once:
+measurements2[, c(&quot;sepal_length _mm&quot;, &quot;sepal_width_mm&quot;, &quot;petal_length_mm&quot;, &quot;petal_width_mm&quot;)] &lt;- list(NULL)
 
 # apply a function across a selection of columns
-measurements2.1 &lt;- data.frame(apply(measurements2[,c(1:4)], 2, function(x) x/10))
+measurements2.1 &lt;- data.frame(apply(measurements2[, c(1:4)], 2, function(x) x/10))
 measurements2.1 &lt;- cbind(measurements2.1, measurements2$sample_ID)
- # apply coerces the data frame into a matrix; hence the data.frame() around the apply function. Try removing it and see for yourself.
+# apply coerces the data frame into a matrix; hence the data.frame() around the
+# apply function. Try removing it and see for yourself.
 
 # divide a selection of columns
-measurements2.2 &lt;- measurements2[,c(1:4)]/10
+measurements2.2 &lt;- measurements2[, c(1:4)]/10
 measurements2.2 &lt;- cbind(measurements2.2, measurements2$sample_ID)
 
 # useful: check whether the different methods produce identical data sets
-#all(measurements2.1==measurements2.2)</code></pre>
+# all(measurements2.1==measurements2.2)</code></pre>
 <p>measurements3 is lacking sample IDs. Luckily, they were recorded,
 too. Please add them to the data frame as they are.</p>
-<pre class="r"><code>sample_ID &lt;- c(37, 29, 30, 7, 42, 48, 14, 39, 49, 43, 18, 46, 47, 17, 31, 32, 91, 67, 97, 92, 99, 88, 71, 65, 57, 73, 75, 81, 52, 61, 62, 80, 111, 110, 129, 112, 133, 130, 102, 127, 150, 131, 105, 101, 142, 113, 147, 145)</code></pre>
+<pre class="r"><code>sample_ID &lt;- c(37, 29, 30, 7, 42, 48, 14, 39, 49, 43, 18, 46, 47, 17, 31, 32, 91,
+    67, 97, 92, 99, 88, 71, 65, 57, 73, 75, 81, 52, 61, 62, 80, 111, 110, 129, 112,
+    133, 130, 102, 127, 150, 131, 105, 101, 142, 113, 147, 145)</code></pre>
 <p>Solution:</p>
 <pre class="r"><code># tidyverse solution
 measurements3 &lt;- measurements3 %&gt;%
-  add_column(sample_ID=sample_ID)
+    add_column(sample_ID = sample_ID)
 
 # base R
 measurements3[&quot;sample_ID&quot;] &lt;- sample_ID</code></pre>
@@ -651,13 +656,13 @@ the data.<br />
 Solution for adding new column:</p>
 <pre class="r"><code># tidyverse solution
 measurements1 &lt;- measurements1 %&gt;%
-  add_column(source=&quot;field_assistant1&quot;)
+    add_column(source = &quot;field_assistant1&quot;)
 
 measurements2 &lt;- measurements2 %&gt;%
-  add_column(source=&quot;field_assistant2&quot;)
+    add_column(source = &quot;field_assistant2&quot;)
 
 measurements3 &lt;- measurements3 %&gt;%
-  add_column(source=&quot;field_assistant3&quot;)
+    add_column(source = &quot;field_assistant3&quot;)
 
 # base R :)
 measurements1[&quot;source&quot;] &lt;- c(&quot;field_assistant1&quot;)
@@ -676,7 +681,8 @@ rename them.</p>
 <p>Hint:</p>
 <pre class="r"><code># to stack the data sets by rows using bind_rows() or rbind()
 
-# to combine them with the key for species identification, using a _join(), see dplyer cheat sheet!</code></pre>
+# to combine them with the key for species identification, using a _join(), see
+# dplyer cheat sheet!</code></pre>
 <p>Solution:</p>
 <pre class="r"><code>main &lt;- bind_rows(measurements1, measurements2, measurements3)
 main &lt;- rbind(measurements1, measurements2, measurements3)
@@ -692,48 +698,38 @@ Once you’ve made the plot, think about whether this representation is
 suitable, or how you could improve it.</p>
 <p>Hint 1:</p>
 <pre class="r"><code># ggplot(data.frame, aes(x=x_axis_column, y=x_axis_column))+ # basic info
-#  geom_...()                                               # how you want to visualise it </code></pre>
+# geom_...() # how you want to visualise it</code></pre>
 <p>Hint 2:</p>
-<pre class="r"><code># You&#39;d expect to see 50 dots per species, right? So quite some of the points are overlapping. Try to use geom_jitter() instead of geom_point()</code></pre>
+<pre class="r"><code># You&#39;d expect to see 50 dots per species, right? So quite some of the points
+# are overlapping. Try to use geom_jitter() instead of geom_point()</code></pre>
 <p>Solution:</p>
-<pre class="r"><code>ggplot(main, aes(x=Species, y=sepal_length)) +
-  geom_point(aes(col=source))
-ggplot(main, aes(x=Species, y=sepal_length)) +
-  geom_jitter(aes(col=source))</code></pre>
+<pre class="r"><code>ggplot(main, aes(x = Species, y = sepal_length)) + geom_point(aes(col = source))
+ggplot(main, aes(x = Species, y = sepal_length)) + geom_jitter(aes(col = source))</code></pre>
 <p>Now to generate a complete plot, add proper labels for the axes and
 legend, and a title. And if you want to, change the general layout with
 a different theme. You can find all this information in the
 documentation online (e.g. <a href="https://ggplot2.tidyverse.org/" class="uri">https://ggplot2.tidyverse.org/</a>)</p>
 <p>Solution</p>
-<pre class="r"><code>ggplot(main, aes(x=Species, y=sepal_length)) +
-  geom_jitter(aes(col=source)) +
-  theme_classic() +
-  xlab(&quot;Iris species&quot;) +
-  ylab(&quot;measurement in cm&quot;) +
-  ggtitle(&quot;Sepal length per species&quot;) +
-  guides(col = guide_legend(title = &quot;Assistants&quot;))</code></pre>
+<pre class="r"><code>ggplot(main, aes(x = Species, y = sepal_length)) + geom_jitter(aes(col = source)) +
+    theme_classic() + xlab(&quot;Iris species&quot;) + ylab(&quot;measurement in cm&quot;) + ggtitle(&quot;Sepal length per species&quot;) +
+    guides(col = guide_legend(title = &quot;Assistants&quot;))</code></pre>
 <p>Challenge: Now that we’ve seen that the field assistants did a great
 job and there seems to be no bias, let’s look at all the data. At once.
 To do so, prepare a grid of bar plots. In order to do so, you will need
 to transform the data set a bit first.<br />
 Hint:</p>
 <pre class="r"><code># the function to prepare several plots at once is facet_grid() or facet_wrap()
-# in oder to produce a long format data frame, use the function &#39;melt&#39; from the library &#39;reshape2&#39;
-# keep &quot;Species&quot;, &quot;sample_ID&quot;, and &quot;source&quot; as ID variables.</code></pre>
+# in oder to produce a long format data frame, use the function &#39;melt&#39; from the
+# library &#39;reshape2&#39; keep &#39;Species&#39;, &#39;sample_ID&#39;, and &#39;source&#39; as ID variables.</code></pre>
 <p>Solution:</p>
-<pre class="r"><code>main_m &lt;- main %&gt;% 
-  pivot_longer(!c(Species,sample_ID,source), names_to=&quot;variable&quot;, values_to=&quot;value&quot;)
+<pre class="r"><code>main_m &lt;- main %&gt;%
+    pivot_longer(!c(Species, sample_ID, source), names_to = &quot;variable&quot;, values_to = &quot;value&quot;)
 
-ggplot(main_m, aes(y=value, x=Species)) +
-  geom_boxplot() +
-  facet_grid(.~variable, scales = &quot;free&quot;)
+ggplot(main_m, aes(y = value, x = Species)) + geom_boxplot() + facet_grid(. ~ variable,
+    scales = &quot;free&quot;)
 
-# to make it  look nice:
-last_plot() +
-  theme_bw() +
-  xlab(&quot;Iris species&quot;) +
-  ylab(&quot;measurements in cm&quot;) +
-  ggtitle(&quot;Data overview&quot;)</code></pre>
+# to make it look nice:
+last_plot() + theme_bw() + xlab(&quot;Iris species&quot;) + ylab(&quot;measurements in cm&quot;) + ggtitle(&quot;Data overview&quot;)</code></pre>
 </div>
 
 

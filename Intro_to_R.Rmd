@@ -5,7 +5,7 @@ date: "May 27 2022"
 output: 
   revealjs::revealjs_presentation: 
     theme: simple
-    highlight: haddock
+    highlight: default
     center: false
     transition: slide
     css: new_reveal.css
@@ -21,10 +21,9 @@ library(tidyverse)
 
 > * about R and RStudio
 > * data handling:
->     * data collection and organization
->     * manipulation and analysis
+>     importing and accessing data
+>     manipulation and analysis
 > * visualisation
->     * interpretation and presentation  
 
 # About R and RStudio
 
@@ -136,16 +135,17 @@ sum(k)
 
 # How to access and modify parts of data structures
 
+- How to access parts in **vectors**,tables and **S4 objects**
+- How to work with tables (**data frame**/**data table**/**tibble**/**matrix**)
+
 ## How to access and modify parts of data structures: vectors
 
 vector[element], length(vector)
 
 ```{r access_vectors, echo=TRUE}
-k <- c(12, 13, 14)
 k
 (k[4] <- 15)
 length(k)
-
 animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
 animals[3:4]
 ```
@@ -160,9 +160,10 @@ df[1:2,]
 df[df$colour=="brown",] #select rows that match a condition
 ```
 
-## S4 object
+## S4 object (Specifically defined tables or more complex data structures)
 
-Specifically defined tables or more complex data structures, e.g.
+S4_obj@slot
+
 ```{r S4, echo=T, eval=T}
 dnastring <-  Biostrings::DNAString("TTGAAA-CTC-N")
 str(dnastring)  
@@ -192,11 +193,6 @@ str(data)
 rownames(data)
 colnames(data)
 ```
-
-## Data structures
-
-- How to work with tables (**data frame**/**data table**/**tibble**/**matrix**)
-- How to access parts in **vectors**,tables and **S4 objects**
 
 # Working with tables (data frame, tibble, data table)
 
