@@ -76,7 +76,10 @@ Solution:
 ```{r Im_KT.csv_solution, eval=TRUE}
 measurements2 <- read_delim("Exercise_material/Iris_measurements_KT.csv", delim = ",")
 measurements2 <- read_csv("Exercise_material/Iris_measurements_KT.csv")
-measurements2 <- read.csv("Exercise_material/Iris_measurements_KT.csv", header=TRUE, sep=",")
+# Using check.names = FALSE in read.csv to ensure that results
+# are the same across methods. Feel free to look at what happens
+# if check.names is used when reading the measurements2 file!
+measurements2 <- read.csv("Exercise_material/Iris_measurements_KT.csv", header=TRUE, sep=",", check.names = FALSE)
 ```
 
 __Iris_sepal_petal_NTR.csv__  
@@ -139,51 +142,54 @@ Check all data set the same way. What did you find?
 Let's modify the columns in measurements2 to fit the same scale as the measurements from the other two data frames.
 Hint:
 ```{r mm_to_cm_hint, eval=F}
-# dplyr suggestions:
+# Tidyverse suggestions: create new columns using mutate() to rescale values, rename or drop columns using rename() or select().
 
 # Base R suggestion: create a new column (e.g. sepal_width), assign the new column with the corresponding "old" column divided by 10. Check that it worked properly, if necessary, remove superfluous old column.
 ```
 
 Suggestions for solution:
-```{r mm_to_cm_solution}
+```{r mm_to_cm_solution, results='hide'}
 # tidyverse solutions
-library(magrittr)
-library(dplyr)
 library(tidyverse)
 
+# The solutions below are redundant - running the code as is won't work,
+# but try the methods that appeal to you :)
 # mutate columns; i.e. create a new column "sepal_length_cm" by dividing "sepal_length._mm" by 10
-measurements2 <- measurements2 %>%
-  mutate(sepal_length_cm = sepal_length._mm/10) %>%
-  select(-sepal_length._mm) # drops the sepal_length._mm column
-
-measurements2 <- read.csv("Exercise_material/Iris_measurements_KT.csv", header=TRUE, sep=",")
-# mutate columns and directly replace the existing one
-measurements2 <- measurements2 %>%
-  mutate(sepal_length._mm = sepal_length._mm/10)
+measurements2 %>%
+  mutate(sepal_length_cm = `sepal_length _mm`/10) %>%
+  select(-`sepal_length _mm`) # drops the sepal_length._mm column
 
 # modify a range of columns at once, replacing the original columns
-measurements2 <- measurements2 %>% 
+# and renaming them afterwards
+measurements2 %>% 
   mutate(across(ends_with('_mm'), ~./10)) %>%
-  rename_with(~ str_remove(.x, '[.]?_mm$')) # this is an advanced addition
+  rename_with(~ str_remove(.x, '[ ]?_mm$')) # this is some regexp (regular expression) magic
+  # The rename_with above is very fancy!
+  # It takes as its argument a function to rename according to
+  # Here we use tilde (~) to create an unnamed (anonymous/lambda) function
+  # which in turn calls the str_remove function
+  # to remove text patterns matching the regular expression
+  # '[ ]?_mm$', i.e. an optional space, followed by _mm as
+  # the end of the string
 
 # Base R solutions
 # one by one
-measurements2["sepal_length"] <- measurements2$sepal_length._mm/10
+measurements2["sepal_length"] <- measurements2$`sepal_length _mm`/10
 measurements2["sepal_width"] <- measurements2$sepal_width_mm/10
 measurements2["petal_length"] <- measurements2$petal_length_mm/10
 measurements2["petal_width"] <- measurements2$petal_width_mm/10
 #have a look whether it looks correct, then remove the old columns ("_mm")
-measurements2$sepal_length._mm <- NULL
+measurements2$`sepal_length _mm` <- NULL
 measurements2$sepal_width_mm <- NULL
 measurements2$petal_length_mm <- NULL
 measurements2$petal_width_mm <- NULL
 
-# Elegant tipps and tricks
+# Elegant tips and tricks
 
 # deleting several columns at once: 
-measurements2[,c("sepal_length._mm", "sepal_width_mm", "petal_length_mm", "petal_width_mm")] <- list(NULL)
+measurements2[,c("sepal_length _mm", "sepal_width_mm", "petal_length_mm", "petal_width_mm")] <- list(NULL)
 
-# apply a function across a selection of coluns
+# apply a function across a selection of columns
 measurements2.1 <- data.frame(apply(measurements2[,c(1:4)], 2, function(x) x/10))
 measurements2.1 <- cbind(measurements2.1, measurements2$sample_ID)
  # apply coerces the data frame into a matrix; hence the data.frame() around the apply function. Try removing it and see for yourself.
@@ -237,9 +243,6 @@ Solution:
 # tidyverse solution
 measurements1 <- measurements1 %>% 
   rename(sepal_length=Sepal.Length, sepal_width=Sepal.Width, petal_length=Petal.Length, petal_width=Petal.Width)
-
-measurements2 <- measurements2 %>% 
-  rename(sepal_length=`sepal_length `)
 
 measurements3 <- measurements3 %>% 
   rename(sepal_length=sep_len, sepal_width=sep_wid, petal_length=pet_len, petal_width=pet_wid)
@@ -323,9 +326,6 @@ Solution:
 ```{r facet_s, echo=TRUE, eval=FALSE}
 main_m <- main %>% 
   pivot_longer(!c(Species,sample_ID,source), names_to="variable", values_to="value")
-
-library(reshape2)
-main_m <- melt(main, id.vars=c("Species", "sample_ID", "source"))
 
 ggplot(main_m, aes(y=value, x=Species)) +
   geom_boxplot() +
