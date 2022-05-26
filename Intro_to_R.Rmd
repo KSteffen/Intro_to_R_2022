@@ -44,7 +44,7 @@ library(tidyverse)
 ## Goals and purposes with using R
 
 > * powerful, flexible/customisable
-> * easy for sharing and developping
+> * easy for sharing and developing
 > * __reproducible science__: scripts and markdowns  
 
 ## Connecting to the R server
@@ -53,7 +53,7 @@ In you own computer's browser, open a new tab and type your AMI address "AMI add
 username: evomics  
 password: genomics2022  
 
-## scripts and markdowns
+## Scripts and markdowns
 
  <img src="figures/script_markdown.png" class="plain">
 
@@ -95,13 +95,14 @@ __Best practice__
 ## How R works: Operators & Functions 
 - Arithmetic (basic math): `+`, `-`, `*`, `/`, `^`, ...
 - Relational: `<`, `>`, `==`, `!=`
-- Logical: `!`, `&`,`&&`, `|`, `||` 
+- Logical: `!`, `&`,`&&`, `|`, `||`, `TRUE`, `FALSE` 
 - Assignment: `<-`, `=`
 - Pipe: `%>%`
 - Specifying ranges (colon): `:`
 - Access library functions: `::`
 - Comment: `#`
-- Functions: e.g. `sum()`, `ggplot()`, ...
+- Functions: e.g. `c()`, `sum()`, `ggplot()`, ...
+- Tilde operator (specify models, functions): `~`
 
 ## How R works: Operators 
 
@@ -156,6 +157,15 @@ table$column, table[rows, columns], dim(table)
 
 ```{r access_tables, echo=TRUE, eval=T}
 df <- tibble(k, animals, colour=c("brown", "rainbow", "brown", "rainbow"))
+df
+```
+
+## How to access and modify parts of data structures: tables
+
+table$column, table[rows, columns], dim(table)
+
+```{r access_tables2, echo=TRUE, eval=T}
+dim(df)
 df[1:2,]
 df[df$colour=="brown",] #select rows that match a condition
 ```
@@ -198,8 +208,7 @@ colnames(data)
 
 ```{r tables, echo=TRUE}
 #library(tidyverse)
-mpg <- mpg # data set included in ggplot2 package
-mpg
+mpg # data set included in ggplot2 package
 ```
 
 ## Working with tables
@@ -226,11 +235,7 @@ mpg %>%
 ## Working with tables
 
 ```{r summarise, echo=T, eval=T}
-mpg %>%
-  summarise(mean_fuel = mean(cty))
-
 # median(), sd(), IQR(), min(), max(), n()
-
 summary <- mpg %>%
   summarise(mean_fuel = mean(cty))
 summary
@@ -255,11 +260,13 @@ mpg %>%
 ## Working with tables
 
 ```{r join, eval=TRUE, echo=TRUE}
-df <- tibble(manufacturer=c("audi", "chevrolet", "dodge", "ford", "honda", "hyundai", "jeep", "land rover", "lincoln", "mercury", "nissan", "pontiac", "subaru", "toyota", "volkswagen"), country_origin=c("Germany", "USA", "USA", "USA", "Japan", "South Korea", "USA", "USA", "USA", "USA", "Japan", "USA","Japan", "Japan", "Germany"))
-head(df, n=3)
+car_origins <- tibble(
+  manufacturer=c("audi", "chevrolet", "dodge", "ford", "honda", "hyundai", "jeep", "land rover", "lincoln", "mercury", "nissan", "pontiac", "subaru", "toyota", "volkswagen"),
+  country_origin=c("Germany", "USA", "USA", "USA", "Japan", "South Korea", "USA", "USA", "USA", "USA", "Japan", "USA","Japan", "Japan", "Germany"))
+head(car_origins, n=3)
 
 mpg %>%
-  left_join(df) %>%
+  left_join(car_origins) %>%
   select(c(manufacturer, model, year, trans, country_origin))
 ```
 
