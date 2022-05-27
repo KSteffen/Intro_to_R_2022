@@ -145,8 +145,19 @@ vector[element], length(vector)
 
 ```{r access_vectors, echo=TRUE}
 k
+k[2]
+length(k)
 (k[4] <- 15)
 length(k)
+```
+
+## How to access and modify parts of data structures: vectors
+
+vector[element], length(vector)
+
+```{r access_vectors2, echo=TRUE}
+2:4
+3:4
 animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
 animals[3:4]
 ```
@@ -158,6 +169,7 @@ table$column, table[rows, columns], dim(table)
 ```{r access_tables, echo=TRUE, eval=T}
 df <- tibble(k, animals, colour=c("brown", "rainbow", "brown", "rainbow"))
 df
+df$colour
 ```
 
 ## How to access and modify parts of data structures: tables
@@ -172,13 +184,13 @@ df[df$colour=="brown",] #select rows that match a condition
 
 ## S4 object (Specifically defined tables or more complex data structures)
 
-S4_obj@slot
+S4 objects can do a bunch of interesting things, Josie will talk more about these later.
+Use `@` to access S4 object slots (similar to using `$` for other objects)
 
 ```{r S4, echo=T, eval=T}
 dnastring <-  Biostrings::DNAString("TTGAAA-CTC-N")
 str(dnastring)  
 dnastring@length
-Biostrings::reverseComplement(dnastring)
 ```
 
 ## Functions to start with: Importing data and inspecting it
@@ -202,6 +214,7 @@ dim(data)
 str(data)
 rownames(data)
 colnames(data)
+view(data)
 ```
 
 # Working with tables (data frame, tibble, data table)
