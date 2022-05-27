@@ -44,28 +44,22 @@ library(tidyverse)
 ## Goals and purposes with using R
 
 > * powerful, flexible/customisable
-> * easy for sharing and developing
+> * easy to develop complex analyses
 > * __reproducible science__: scripts and markdowns  
-
-## Connecting to the R server
-
-In you own computer's browser, open a new tab and type your AMI address "AMI address:8787"  
-username: evomics  
-password: genomics2022  
 
 ## Scripts and markdowns
 
- <img src="figures/script_markdown.png" class="plain">
-
 Markup languages (HTML, LaTeX, markdown) are used to format text. Both exercises and presentations during this lab have been produced using the rmarkdown package. The code for these are available in the files Intro_to_R.Rmd and Intro_to_R_EXERCISE.Rmd. For longer-form writing, including reports and papers, check out the bookdown package.  
+
+<img src="figures/script_markdown.png" class="plain">
 
 ## Data handling: collecting and organisation
 
 __Conventions about data format__  
 
-> * Observations are entered in __rows__
-> * Variables are entered in  __columns__
-> * A column of data should contain only one data type  
+- Observations are entered in __rows__
+- Variables are entered in  __columns__
+- A column of data should contain only one data type  
 
 ## Data handling: collecting and organisation
 
@@ -85,7 +79,17 @@ __Best practice__
 - Try running example code, and check the example input
 - Google is your friend  
 
-# Getting started
+# Getting started: Connecting to the R server
+
+In you own computer's browser, open a new tab and type 
+
+`<AMI address>:8787`
+
+in the URL bar.  
+
+username: evomics  
+
+password: genomics2022  
 
 > * open RStudio
 > * open a script
@@ -93,6 +97,7 @@ __Best practice__
 > ...  
 
 ## How R works: Operators & Functions 
+
 - Arithmetic (basic math): `+`, `-`, `*`, `/`, `^`, ...
 - Relational: `<`, `>`, `==`, `!=`
 - Logical: `!`, `&`,`&&`, `|`, `||`, `TRUE`, `FALSE` 
@@ -106,7 +111,8 @@ __Best practice__
 
 ## How R works: Operators 
 
-Examples: Arithmetic (basic math): +, -, *, /, ^, ...  
+Examples: Arithmetic (basic math): +, -, *, /, ^, ... 
+
 ```{r operators1, echo=TRUE}
 12+13+14
 (5+2)*2
@@ -116,6 +122,7 @@ Examples: Arithmetic (basic math): +, -, *, /, ^, ...
 ## How R works: Operators & Functions
 
 __Assignment (<-, =)__  
+
 ```{r operators2, echo=TRUE}
 x <- 12
 y <- 13
@@ -141,7 +148,7 @@ sum(k)
 
 ## How to access and modify parts of data structures: vectors
 
-vector[element], length(vector)
+vector[element_number], length(vector)
 
 ```{r access_vectors, echo=TRUE}
 k
@@ -164,7 +171,7 @@ animals[3:4]
 
 ## How to access and modify parts of data structures: tables
 
-table$column, table[rows, columns], dim(table)
+table[rows, columns], table$column_name, dim(table)
 
 ```{r access_tables, echo=TRUE, eval=T}
 df <- tibble(k, animals, colour=c("brown", "rainbow", "brown", "rainbow"))

@@ -504,13 +504,13 @@ terminal to have a look at them.</p>
 <p><strong>key.csv</strong><br />
 Please import as “key”.<br />
 Hint:</p>
-<pre class="r"><code># Figure out path to file
-# Use read_csv()</code></pre>
+<pre class="r"><code># Figure out path to the files
+# Use read_delim(), read_csv(), read_tsv() or read.csv()</code></pre>
 <p>Solution(s):</p>
 <pre class="r"><code>library(readr)
-
 key &lt;- read_delim(&quot;Exercise_material/key.csv&quot;, delim = &quot;,&quot;) # read_delim() is the general function
 key &lt;- read_csv(&quot;Exercise_material/key.csv&quot;) # read_csv() is a specialized version for csv files
+
 key &lt;-  read.csv(&quot;Exercise_material/key.csv&quot;, header=TRUE, sep=&quot;,&quot;) # base R :)</code></pre>
 <p><strong>field_work_measurements_MC.txt</strong><br />
 Please import as “measurements1”.<br />
@@ -570,7 +570,7 @@ str(measurements1) # correct type (integer/number)
 colnames(measurements1)
 head(measurements1) # looks alright
 # alternatively, click on the data frame in the top right window in your RStudio</code></pre>
-<p>Check all data set the same way. What did you find?</p>
+<p>Check all data sets the same way. What did you find?</p>
 <pre class="r"><code># measurements1: generally ok
 
 # measurements2: measured in mm --&gt; we need to convert the columns to cm!
@@ -587,8 +587,8 @@ the measurements from the other two data frames. Hint:</p>
 <pre class="r"><code># tidyverse solutions
 library(tidyverse)
 
-# The solutions below are redundant - running the code as is won&#39;t work,
-# but try the methods that appeal to you :)
+# The solutions below are redundant - running the code as is won&#39;t work, but try the methods that appeal to you :)
+
 # mutate columns; i.e. create a new column &quot;sepal_length_cm&quot; by dividing &quot;sepal_length._mm&quot; by 10
 measurements2 %&gt;%
   mutate(sepal_length_cm = `sepal_length _mm`/10) %&gt;%
@@ -634,7 +634,7 @@ measurements2.2 &lt;- measurements2[,c(1:4)]/10
 measurements2.2 &lt;- cbind(measurements2.2, measurements2$sample_ID)
 
 # useful: check whether the different methods produce identical data sets
-#all(measurements2.1==measurements2.2)</code></pre>
+all(measurements2.1==measurements2.2)</code></pre>
 <p>measurements3 is lacking sample IDs. Luckily, they were recorded,
 too. Please add them to the data frame as they are.</p>
 <pre class="r"><code>sample_ID &lt;- c(37, 29, 30, 7, 42, 48, 14, 39, 49, 43, 18, 46, 47, 17, 31, 32, 91, 67, 97, 92, 99, 88, 71, 65, 57, 73, 75, 81, 52, 61, 62, 80, 111, 110, 129, 112, 133, 130, 102, 127, 150, 131, 105, 101, 142, 113, 147, 145)</code></pre>
@@ -670,6 +670,23 @@ the same headers. Let’s do that! Keep in mind that the order of the
 columns does not play a role, as long as you don’t mix them up when you
 rename them.</p>
 <p>Solution:</p>
+<pre class="r"><code># tidyverse solution
+measurements1 &lt;- measurements1 %&gt;%
+  rename(sepal_length=Sepal.Length, sepal_width=Sepal.Width, petal_length=Petal.Length, petal_width=Petal.Width)
+
+measurements3 &lt;- measurements3 %&gt;%
+  rename(sepal_length=sep_len, sepal_width=sep_wid, petal_length=pet_len, petal_width=pet_wid)
+
+# base R :)
+
+# check the current column names; alternatively (head) or inspecing the data frames
+
+#colnames(measurements1)
+
+#colnames(measurements3)
+
+colnames(measurements1) &lt;- c(&quot;sample_ID&quot;, &quot;sepal_length&quot;, &quot;sepal_width&quot;, &quot;petal_length&quot;, &quot;petal_width&quot;, &quot;source&quot;)
+colnames(measurements3) &lt;- c(&quot;sepal_length&quot;, &quot;sepal_width&quot;, &quot;petal_length&quot;, &quot;petal_width&quot;, &quot;sample_ID&quot;, &quot;source&quot;)</code></pre>
 <p>Now let’s try to join the measurements together.</p>
 <p>Hint:</p>
 <pre class="r"><code># to stack the data sets by rows using bind_rows() or rbind()
