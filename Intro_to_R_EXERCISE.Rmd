@@ -35,17 +35,17 @@ __key.csv__
 Please import as "key".  
 Hint:
 ```{r key.csv_hint, eval=FALSE}
-# Figure out path to file
-# Use read.csv()
+# Figure out path to the files
 
+# Use read_delim(), read_csv(), read_tsv() or read.csv()
 ```
 
 Solution(s):  
 ```{r key.csv_solution, eval=TRUE}
 library(readr)
-
 key <- read_delim("Exercise_material/key.csv", delim = ",") # read_delim() is the general function
 key <- read_csv("Exercise_material/key.csv") # read_csv() is a specialized version for csv files
+
 key <-  read.csv("Exercise_material/key.csv", header=TRUE, sep=",") # base R :)
 ```
 
@@ -132,7 +132,7 @@ head(measurements1) # looks alright
 # alternatively, click on the data frame in the top right window in your RStudio
 ```
 
-Check all data set the same way. What did you find?
+Check all data sets the same way. What did you find?
 ```{r data_set_troubleshooting}
 # measurements1: generally ok 
 
@@ -156,8 +156,8 @@ Suggestions for solution:
 # tidyverse solutions
 library(tidyverse)
 
-# The solutions below are redundant - running the code as is won't work,
-# but try the methods that appeal to you :)
+# The solutions below are redundant - running the code as is won't work, but try the methods that appeal to you :)
+
 # mutate columns; i.e. create a new column "sepal_length_cm" by dividing "sepal_length._mm" by 10
 measurements2 %>%
   mutate(sepal_length_cm = `sepal_length _mm`/10) %>%
@@ -203,7 +203,7 @@ measurements2.2 <- measurements2[,c(1:4)]/10
 measurements2.2 <- cbind(measurements2.2, measurements2$sample_ID)
 
 # useful: check whether the different methods produce identical data sets
-#all(measurements2.1==measurements2.2)
+all(measurements2.1==measurements2.2)
 ```
 
 measurements3 is lacking sample IDs. Luckily, they were recorded, too. Please add them to the data frame as they are.
@@ -243,7 +243,7 @@ measurements3["source"] <- c("field_assistant3")
 Now, let's combine all of them (measurements and our identification key) to one data set. The function we use to join the data sets will merge them based on (1) a designated pairs of columns in each of the two data sets or (2) two (or more) columns with the same name. Therefore, it is most convenient to modify the three different data sets to all have the same headers. Let's do that! Keep in mind that the order of the columns does not play a role, as long as you don't mix them up when you rename them.  
 
 Solution:
-```{r colnames, eval=T, echo=FALSE}
+```{r colnames, eval=T, echo=T}
 # tidyverse solution
 measurements1 <- measurements1 %>% 
   rename(sepal_length=Sepal.Length, sepal_width=Sepal.Width, petal_length=Petal.Length, petal_width=Petal.Width)
