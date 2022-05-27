@@ -36,7 +36,6 @@ Please import as "key".
 Hint:
 ```{r key.csv_hint, eval=FALSE}
 # Figure out path to the files
-
 # Use read_delim(), read_csv(), read_tsv() or read.csv()
 ```
 
@@ -60,16 +59,16 @@ Solution(s):
 ```{r fwm_MC.csv_solution, eval=TRUE}
 # tidyverse solution
 # read_delim() is the general function
-measurements1 <-  read_delim("Exercise_material/field_work_measurements_MC.csv", delim="\t") 
-# read_tsv() is a specialised verison for tsv files
-measurements1 <-  read_tsv("Exercise_material/field_work_measurements_MC.csv") 
+measurements1 <-  read_delim("Exercise_material/field_work_measurements_MC.csv", delim="\t")
+# read_tsv() is a specialised version for tsv files
+measurements1 <-  read_tsv("Exercise_material/field_work_measurements_MC.csv")
 
 # base R :)
-measurements1 <-  read.csv("Exercise_material/field_work_measurements_MC.csv", header=TRUE, sep="\t") 
+measurements1 <-  read.csv("Exercise_material/field_work_measurements_MC.csv", header=TRUE, sep="\t")
 ```
 
-__Iris_measurements_KT.csv__  
-Please import as "measurements2".  
+__Iris_measurements_KT.csv__ 
+Please import as "measurements2". 
 Hint:  
 ```{r Im_KT.csv_hint, eval=FALSE}
 # It is always a good idea to look at the file.
@@ -114,11 +113,11 @@ Inspect the data frames. Do they contain all the relevant information? We need:
 
 - four sets of measurements
 - measured in cm
-- a column for identification  
+- a column for identification
 
 Hint for looking at the data sets:
 ```{r inspection_hint, eval=FALSE}
-# try: str(), dim(), head(), colnames()   
+# try: str(), dim(), head(), colnames()
 
 # to view them: type their name or click on their name in the "environment" window (top right)
 ```
@@ -134,13 +133,13 @@ head(measurements1) # looks alright
 
 Check all data sets the same way. What did you find?
 ```{r data_set_troubleshooting}
-# measurements1: generally ok 
+# measurements1: generally ok
 
-# measurements2: measured in mm --> we need to convert the columns to cm! 
+# measurements2: measured in mm --> we need to convert the columns to cm!
 
-# measurements3: sample IDs missing 
+# measurements3: sample IDs missing
 
-# All data frames have different column names. 
+# All data frames have different column names.
 ```
 
 Let's modify the columns in measurements2 to fit the same scale as the measurements from the other two data frames.
@@ -165,7 +164,7 @@ measurements2 %>%
 
 # modify a range of columns at once, replacing the original columns
 # and renaming them afterwards
-measurements2 %>% 
+measurements2 %>%
   mutate(across(ends_with('_mm'), ~./10)) %>%
   rename_with(~ str_remove(.x, '[ ]?_mm$')) # this is some regexp (regular expression) magic
   # The rename_with above is very fancy!
@@ -190,7 +189,7 @@ measurements2$petal_width_mm <- NULL
 
 # Elegant tips and tricks
 
-# deleting several columns at once: 
+# deleting several columns at once:
 measurements2[,c("sepal_length _mm", "sepal_width_mm", "petal_length_mm", "petal_width_mm")] <- list(NULL)
 
 # apply a function across a selection of columns
@@ -221,8 +220,8 @@ measurements3 <- measurements3 %>%
 measurements3["sample_ID"] <- sample_ID
 ```
 
-Once everything is okay, add another column to identify who measured the data.  
-Solution for adding new column:  
+Once everything is okay, add another column to identify who measured the data.
+Solution for adding new column:
 ```{r adding_column_solution}
 # tidyverse solution
 measurements1 <- measurements1 %>%
@@ -240,15 +239,15 @@ measurements2["source"] <- c("field_assistant2")
 measurements3["source"] <- c("field_assistant3")
 ```
 
-Now, let's combine all of them (measurements and our identification key) to one data set. The function we use to join the data sets will merge them based on (1) a designated pairs of columns in each of the two data sets or (2) two (or more) columns with the same name. Therefore, it is most convenient to modify the three different data sets to all have the same headers. Let's do that! Keep in mind that the order of the columns does not play a role, as long as you don't mix them up when you rename them.  
+Now, let's combine all of them (measurements and our identification key) to one data set. The function we use to join the data sets will merge them based on (1) a designated pairs of columns in each of the two data sets or (2) two (or more) columns with the same name. Therefore, it is most convenient to modify the three different data sets to all have the same headers. Let's do that! Keep in mind that the order of the columns does not play a role, as long as you don't mix them up when you rename them.
 
 Solution:
 ```{r colnames, eval=T, echo=T}
 # tidyverse solution
-measurements1 <- measurements1 %>% 
+measurements1 <- measurements1 %>%
   rename(sepal_length=Sepal.Length, sepal_width=Sepal.Width, petal_length=Petal.Length, petal_width=Petal.Width)
 
-measurements3 <- measurements3 %>% 
+measurements3 <- measurements3 %>%
   rename(sepal_length=sep_len, sepal_width=sep_wid, petal_length=pet_len, petal_width=pet_wid)
 
 # base R :)
@@ -280,7 +279,7 @@ main <- rbind(measurements1, measurements2, measurements3)
 main <- left_join(key, main)
 ```
 
-Tadaaa! Well done.   
+Tadaaa! Well done.  
 Now for the last part, visualising and understanding your data. We'll use ggplot2, which is part of the tidyverse.
 
 Let's start by checking visually, whether the measurements from the three field assistants have any bias. Choose any variable, (scatter)plot it by species and add coloring according to who took the measurement. Once you've made the plot, think about whether this representation is suitable, or how you could improve it.
@@ -288,7 +287,7 @@ Let's start by checking visually, whether the measurements from the three field 
 Hint 1:
 ```{r ggplot1_h, eval=FALSE}
 # ggplot(data.frame, aes(x=x_axis_column, y=x_axis_column))+ # basic info
-#  geom_...()                                               # how you want to visualise it 
+#  geom_...()                                               # how you want to visualise it
 ```
 
 Hint 2:
@@ -328,7 +327,7 @@ Hint:
 
 Solution:  
 ```{r facet_s, echo=TRUE, eval=FALSE}
-main_m <- main %>% 
+main_m <- main %>%
   pivot_longer(!c(Species,sample_ID,source), names_to="variable", values_to="value")
 
 ggplot(main_m, aes(y=value, x=Species)) +

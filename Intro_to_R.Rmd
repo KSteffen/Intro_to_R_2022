@@ -47,7 +47,7 @@ library(tidyverse)
 > * easy to develop complex analyses
 > * __reproducible science__: scripts and markdowns  
 
-## scripts and markdowns
+## Scripts and markdowns
 
 Markup languages (HTML, LaTeX, markdown) are used to format text. Both exercises and presentations during this lab have been produced using the rmarkdown package. The code for these are available in the files Intro_to_R.Rmd and Intro_to_R_EXERCISE.Rmd. For longer-form writing, including reports and papers, check out the bookdown package.  
 
@@ -100,13 +100,14 @@ password: genomics2022
 
 - Arithmetic (basic math): `+`, `-`, `*`, `/`, `^`, ...
 - Relational: `<`, `>`, `==`, `!=`
-- Logical: `!`, `&`,`&&`, `|`, `||` 
+- Logical: `!`, `&`,`&&`, `|`, `||`, `TRUE`, `FALSE` 
 - Assignment: `<-`, `=`
 - Pipe: `%>%`
 - Specifying ranges (colon): `:`
 - Access library functions: `::`
 - Comment: `#`
-- Functions: e.g. `sum()`, `ggplot()`, ...
+- Functions: e.g. `c()`, `sum()`, `ggplot()`, ...
+- Tilde operator (specify models, functions): `~`
 
 ## How R works: Operators 
 
@@ -151,8 +152,19 @@ vector[element_number], length(vector)
 
 ```{r access_vectors, echo=TRUE}
 k
+k[2]
+length(k)
 (k[4] <- 15)
 length(k)
+```
+
+## How to access and modify parts of data structures: vectors
+
+vector[element], length(vector)
+
+```{r access_vectors2, echo=TRUE}
+2:4
+3:4
 animals <- c("platypus", "nudibranch", "potoo", "peacock mantis shrimp")
 animals[3:4]
 ```
@@ -163,18 +175,29 @@ table[rows, columns], table$column_name, dim(table)
 
 ```{r access_tables, echo=TRUE, eval=T}
 df <- tibble(k, animals, colour=c("brown", "rainbow", "brown", "rainbow"))
+df
+df$colour
+```
+
+## How to access and modify parts of data structures: tables
+
+table$column, table[rows, columns], dim(table)
+
+```{r access_tables2, echo=TRUE, eval=T}
+dim(df)
 df[1:2,]
 df[df$colour=="brown",] #select rows that match a condition
 ```
 
 ## S4 object (Specifically defined tables or more complex data structures)
 
-S4_obj@slot
+S4 objects can do a bunch of interesting things, Josie will talk more about these later.
+Use `@` to access S4 object slots (similar to using `$` for other objects)
+
 ```{r S4, echo=T, eval=T}
 dnastring <-  Biostrings::DNAString("TTGAAA-CTC-N")
 str(dnastring)  
 dnastring@length
-Biostrings::reverseComplement(dnastring)
 ```
 
 ## Functions to start with: Importing data and inspecting it
@@ -198,14 +221,14 @@ dim(data)
 str(data)
 rownames(data)
 colnames(data)
+view(data)
 ```
 
 # Working with tables (data frame, tibble, data table)
 
 ```{r tables, echo=TRUE}
 #library(tidyverse)
-mpg <- mpg # data set included in ggplot2 package
-mpg
+mpg # data set included in ggplot2 package
 ```
 
 ## Working with tables
@@ -232,11 +255,7 @@ mpg %>%
 ## Working with tables
 
 ```{r summarise, echo=T, eval=T}
-mpg %>%
-  summarise(mean_fuel = mean(cty))
-
 # median(), sd(), IQR(), min(), max(), n()
-
 summary <- mpg %>%
   summarise(mean_fuel = mean(cty))
 summary
@@ -261,11 +280,13 @@ mpg %>%
 ## Working with tables
 
 ```{r join, eval=TRUE, echo=TRUE}
-df <- tibble(manufacturer=c("audi", "chevrolet", "dodge", "ford", "honda", "hyundai", "jeep", "land rover", "lincoln", "mercury", "nissan", "pontiac", "subaru", "toyota", "volkswagen"), country_origin=c("Germany", "USA", "USA", "USA", "Japan", "South Korea", "USA", "USA", "USA", "USA", "Japan", "USA","Japan", "Japan", "Germany"))
-head(df, n=3)
+car_origins <- tibble(
+  manufacturer=c("audi", "chevrolet", "dodge", "ford", "honda", "hyundai", "jeep", "land rover", "lincoln", "mercury", "nissan", "pontiac", "subaru", "toyota", "volkswagen"),
+  country_origin=c("Germany", "USA", "USA", "USA", "Japan", "South Korea", "USA", "USA", "USA", "USA", "Japan", "USA","Japan", "Japan", "Germany"))
+head(car_origins, n=3)
 
 mpg %>%
-  left_join(df) %>%
+  left_join(car_origins) %>%
   select(c(manufacturer, model, year, trans, country_origin))
 ```
 
